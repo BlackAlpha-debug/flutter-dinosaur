@@ -1,4 +1,4 @@
-<p align="center">
+<img width="621" height="876" alt="Screenshot 2026-07-12 132557" src="https://github.com/user-attachments/assets/06db7c2a-f6da-4fcd-92ac-3583a4cc1dea" /><p align="center">
   <h1 align="center">Flutter Dino Runner</h1>
   <p align="center">
     <strong>Chrome Dinosaur Game — Reimagined in Flutter</strong>
@@ -21,9 +21,9 @@
 ## Gameplay Preview
 
 <p align="center">
-  <img src="screenshots/day.png" alt="Day Sky" width="32%">
-  <img src="screenshots/sunset.png" alt="Sunset Sky" width="32%">
-  <img src="screenshots/night.png" alt="Night Sky with Rain" width="32%">
+  <img src="https://github.com/user-attachments/assets/4ae09f2b-1add-465e-b8ee-41a551a6b5b" alt="Day Sky" width="32%">
+  <img src="https://github.com/user-attachments/assets/f6ae0f29-652b-442c-b3a2-c0aee0c27baa" alt="Sunset Sky" width="32%">
+  <img src="[screenshots/night.png](https://github.com/user-attachments/assets/ffa8af64-e6ce-4eba-83b5-d1ba100ed259)" alt="Night Sky with Rain" width="32%">
 </p>
 
 ---

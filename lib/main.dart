@@ -7,6 +7,7 @@ import 'dino.dart';
 import 'game_object.dart';
 import 'ground.dart';
 import 'constants.dart';
+import 'rain.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   Dino dino = Dino();
   double runVelocity = initialVelocity;
   double runDistance = 0;
@@ -53,7 +54,11 @@ class _MyHomePageState extends State<MyHomePage>
       TextEditingController(text: dayNightOffest.toString());
 
   late AnimationController worldController;
+  late AnimationController _deathFlashController;
+  late Animation<double> _deathFlashAnimation;
   Duration lastUpdateCall = const Duration();
+
+  int _currentSkyPhase = 0;
 
   List<Cactus> cacti = [Cactus(worldLocation: const Offset(200, 0))];
 
@@ -74,14 +79,38 @@ class _MyHomePageState extends State<MyHomePage>
     worldController =
         AnimationController(vsync: this, duration: const Duration(days: 99));
     worldController.addListener(_update);
-    // worldController.forward();
+
+    _deathFlashController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _deathFlashAnimation = Tween<double>(begin: 0.0, end: 0.4).animate(
+      CurvedAnimation(parent: _deathFlashController, curve: Curves.easeOut),
+    );
+
     _die();
+  }
+
+  List<Color> _getSkyColors() {
+    int phase = (runDistance ~/ skyPhaseInterval)
+        .clamp(0, skyGradients.length - 1);
+    if (phase != _currentSkyPhase) {
+      _currentSkyPhase = phase;
+    }
+    return skyGradients[_currentSkyPhase];
+  }
+
+  Color _getTextColor() {
+    return _currentSkyPhase >= 3 ? Colors.white : Colors.black;
   }
 
   void _die() {
     setState(() {
       worldController.stop();
       dino.die();
+    });
+    _deathFlashController.forward(from: 0.0).then((_) {
+      _deathFlashController.reverse();
     });
   }
 
@@ -90,13 +119,13 @@ class _MyHomePageState extends State<MyHomePage>
       highScore = max(highScore, runDistance.toInt());
       runDistance = 0;
       runVelocity = initialVelocity;
+      _currentSkyPhase = 0;
       dino.state = DinoState.running;
       dino.dispY = 0;
       worldController.reset();
       cacti = [
-        Cactus(worldLocation: const Offset(200, 0)),
         Cactus(worldLocation: const Offset(300, 0)),
-        Cactus(worldLocation: const Offset(450, 0)),
+        Cactus(worldLocation: const Offset(550, 0)),
       ];
 
       ground = [
@@ -145,10 +174,14 @@ class _MyHomePageState extends State<MyHomePage>
         if (obstacleRect.right < 0) {
           setState(() {
             cacti.remove(cactus);
+            double extraGap = runDistance < 800
+                ? 150 + (800 - runDistance) * 0.3
+                : 0;
             cacti.add(Cactus(
                 worldLocation: Offset(
                     runDistance +
                         Random().nextInt(100) +
+                        extraGap +
                         MediaQuery.of(context).size.width / worlToPixelRatio,
                     0)));
           });
@@ -202,6 +235,7 @@ class _MyHomePageState extends State<MyHomePage>
     jumpVelocityController.dispose();
     runVelocityController.dispose();
     dayNightOffestController.dispose();
+    _deathFlashController.dispose();
     super.dispose();
   }
 
@@ -228,12 +262,18 @@ class _MyHomePageState extends State<MyHomePage>
       );
     }
 
+    final skyColors = _getSkyColors();
+
     return Scaffold(
       body: AnimatedContainer(
-        duration: const Duration(milliseconds: 5000),
-        color: (runDistance ~/ dayNightOffest) % 2 == 0
-            ? Colors.white
-            : Colors.black,
+        duration: const Duration(milliseconds: 2000),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: skyColors,
+          ),
+        ),
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
@@ -247,6 +287,12 @@ class _MyHomePageState extends State<MyHomePage>
           child: Stack(
             alignment: Alignment.center,
             children: [
+              Positioned.fill(
+                child: RainEffect(
+                  gameController: worldController,
+                  skyPhase: _currentSkyPhase,
+                ),
+              ),
               ...children,
               AnimatedBuilder(
                 animation: worldController,
@@ -255,12 +301,8 @@ class _MyHomePageState extends State<MyHomePage>
                     left: screenSize.width / 2 - 30,
                     top: 100,
                     child: Text(
-                      'Score: ' + runDistance.toInt().toString(),
-                      style: TextStyle(
-                        color: (runDistance ~/ dayNightOffest) % 2 == 0
-                            ? Colors.black
-                            : Colors.white,
-                      ),
+                      'Score: ${runDistance.toInt()}',
+                      style: TextStyle(color: _getTextColor()),
                     ),
                   );
                 },
@@ -272,12 +314,19 @@ class _MyHomePageState extends State<MyHomePage>
                     left: screenSize.width / 2 - 50,
                     top: 120,
                     child: Text(
-                      'High Score: ' + highScore.toString(),
-                      style: TextStyle(
-                        color: (runDistance ~/ dayNightOffest) % 2 == 0
-                            ? Colors.black
-                            : Colors.white,
-                      ),
+                      'High Score: $highScore',
+                      style: TextStyle(color: _getTextColor()),
+                    ),
+                  );
+                },
+              ),
+              // Game-over red flash overlay
+              AnimatedBuilder(
+                animation: _deathFlashAnimation,
+                builder: (context, _) {
+                  return IgnorePointer(
+                    child: Container(
+                      color: Colors.red.withValues(alpha: _deathFlashAnimation.value),
                     ),
                   );
                 },

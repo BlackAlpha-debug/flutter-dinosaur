@@ -21,7 +21,9 @@
 ## Gameplay Preview
 
 <p align="center">
-  <img src="gameplay.gif" alt="Gameplay Demo" width="600">
+  <img src="screenshots/day.png" alt="Day Sky" width="32%">
+  <img src="screenshots/sunset.png" alt="Sunset Sky" width="32%">
+  <img src="screenshots/night.png" alt="Night Sky with Rain" width="32%">
 </p>
 
 ---

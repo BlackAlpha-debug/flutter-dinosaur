@@ -5,7 +5,7 @@ import 'game_object.dart';
 import 'sprite.dart';
 
 Sprite cloudSprite = Sprite()
-  ..imagePath = "assets/images/cloud.png"
+  ..imagePath = "assets/images/cloud filled.png"
   ..imageWidth = 92
   ..imageHeight = 27;
 

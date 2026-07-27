@@ -3,46 +3,46 @@ import 'constants.dart';
 import 'game_object.dart';
 import 'sprite.dart';
 
-List<Sprite> dino = [
-  Sprite()
-    ..imagePath = "assets/images/dino/dino_1.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
-  Sprite()
-    ..imagePath = "assets/images/dino/dino_2.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
-  Sprite()
-    ..imagePath = "assets/images/dino/dino_3.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
-  Sprite()
-    ..imagePath = "assets/images/dino/dino_4.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
-  Sprite()
-    ..imagePath = "assets/images/dino/dino_5.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
-  Sprite()
-    ..imagePath = "assets/images/dino/dino_6.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
-];
+final dinoIdle = Sprite()
+  ..imagePath = "assets/images/Dino  idle.png"
+  ..imageWidth = 88
+  ..imageHeight = 94;
+
+final dinoRun1 = Sprite()
+  ..imagePath = "assets/images/Dino run 1.png"
+  ..imageWidth = 88
+  ..imageHeight = 94;
+
+final dinoRun2 = Sprite()
+  ..imagePath = "assets/images/Dino run 2.png"
+  ..imageWidth = 88
+  ..imageHeight = 94;
+
+final dinoJump = Sprite()
+  ..imagePath = "assets/images/Dino Jump.png"
+  ..imageWidth = 88
+  ..imageHeight = 94;
+
+final dinoDead = Sprite()
+  ..imagePath = "assets/images/Dino Dead.png"
+  ..imageWidth = 88
+  ..imageHeight = 94;
 
 enum DinoState {
+  idle,
   jumping,
   running,
   dead,
 }
 
 class Dino extends GameObject {
-  Sprite currentSprite = dino[0];
+  Sprite currentSprite = dinoIdle;
   double dispY = 0;
   double velY = 0;
-  DinoState state = DinoState.running;
+  DinoState state = DinoState.idle;
   int _jumpCount = 0;
   static const int _maxJumps = 2;
+  int frameDurationMs = 150;
 
   @override
   Widget render() {
@@ -61,19 +61,30 @@ class Dino extends GameObject {
 
   @override
   void update(Duration lastUpdate, Duration? elapsedTime) {
-    double elapsedTimeSeconds;
-    try {
-      currentSprite = dino[(elapsedTime!.inMilliseconds / 100).floor() % 2 + 2];
-    } catch (_) {
-      currentSprite = dino[0];
-    }
-    try{
-      elapsedTimeSeconds = (elapsedTime! - lastUpdate).inMilliseconds / 1000;
-    }
-    catch(_){
-      elapsedTimeSeconds = 0;
+    if (state == DinoState.idle) {
+      currentSprite = dinoIdle;
+      return;
     }
 
+    if (state == DinoState.running) {
+      try {
+        currentSprite =
+            (elapsedTime!.inMilliseconds ~/ frameDurationMs) % 2 == 0
+                ? dinoRun1
+                : dinoRun2;
+      } catch (_) {
+        currentSprite = dinoRun1;
+      }
+    } else if (state == DinoState.jumping) {
+      currentSprite = dinoJump;
+    }
+
+    double elapsedTimeSeconds;
+    try {
+      elapsedTimeSeconds = (elapsedTime! - lastUpdate).inMilliseconds / 1000;
+    } catch (_) {
+      elapsedTimeSeconds = 0;
+    }
 
     dispY += velY * elapsedTimeSeconds;
     if (dispY <= 0) {
@@ -95,7 +106,7 @@ class Dino extends GameObject {
   }
 
   void die() {
-    currentSprite = dino[5];
+    currentSprite = dinoDead;
     state = DinoState.dead;
   }
 }
@@ -145,6 +156,12 @@ class _DinoWidgetState extends State<_DinoWidget>
 
   @override
   Widget build(BuildContext context) {
+    Widget image = Image.asset(widget.imagePath);
+
+    // Run sprites (Dino run 1/2) already face right — no flip needed.
+    // Idle, jump, and dead sprites face left — flip them.
+    bool needsFlip = widget.state != DinoState.running;
+
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
@@ -156,7 +173,7 @@ class _DinoWidgetState extends State<_DinoWidget>
           child: child,
         );
       },
-      child: Image.asset(widget.imagePath),
+      child: needsFlip ? Transform.flip(flipX: true, child: image) : image,
     );
   }
 }

@@ -6,11 +6,11 @@ import 'sprite.dart';
 
 List<Sprite> pteraFrames = [
   Sprite()
-    ..imagePath = "assets/images/ptera/ptera_1.png"
+    ..imagePath = "assets/images/ptera/Ptera 1.png"
     ..imageHeight = 80
     ..imageWidth = 92,
   Sprite()
-    ..imagePath = "assets/images/ptera/ptera_2.png"
+    ..imagePath = "assets/images/ptera/Ptera 2.png"
     ..imageHeight = 80
     ..imageWidth = 92,
 ];

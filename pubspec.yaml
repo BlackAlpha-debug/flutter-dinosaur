@@ -96,6 +96,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/dino.png"
+  image_path: "assets/images/Dino Icon.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/dino.png"
+  adaptive_icon_foreground: "assets/images/Dino Icon.png"

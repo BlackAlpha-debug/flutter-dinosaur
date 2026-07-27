@@ -7,6 +7,7 @@ import 'dino.dart';
 import 'game_object.dart';
 import 'ground.dart';
 import 'constants.dart';
+import 'ptera.dart';
 import 'rain.dart';
 
 void main() {
@@ -67,6 +68,8 @@ class _MyHomePageState extends State<MyHomePage>
     Ground(worldLocation: Offset(groundSprite.imageWidth / 10, 0))
   ];
 
+  List<Ptera> pteras = [];
+
   List<Cloud> clouds = [
     Cloud(worldLocation: const Offset(100, 20)),
     Cloud(worldLocation: const Offset(200, 10)),
@@ -120,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage>
       runDistance = 0;
       runVelocity = initialVelocity;
       _currentSkyPhase = 0;
-      dino.state = DinoState.running;
+      dino.state = DinoState.idle;
       dino.dispY = 0;
       worldController.reset();
       cacti = [
@@ -141,7 +144,8 @@ class _MyHomePageState extends State<MyHomePage>
         Cloud(worldLocation: const Offset(550, -10)),
       ];
 
-      worldController.forward();
+      pteras = [];
+
     });
   }
 
@@ -186,6 +190,39 @@ class _MyHomePageState extends State<MyHomePage>
                     0)));
           });
         }
+      }
+
+      for (Ptera ptera in pteras) {
+        ptera.update(lastUpdateCall, worldController.lastElapsedDuration!);
+        Rect pteraRect = ptera.getRect(screenSize, runDistance);
+        if (dinoRect.overlaps(pteraRect.deflate(20))) {
+          _die();
+        }
+        if (pteraRect.right < 0) {
+          setState(() {
+            pteras.remove(ptera);
+            pteras.add(Ptera(
+              worldLocation: Offset(
+                runDistance +
+                    Random().nextInt(200) +
+                    100 +
+                    MediaQuery.of(context).size.width / worlToPixelRatio,
+                Random().nextInt(80).toDouble(),
+              ),
+            ));
+          });
+        }
+      }
+
+      if (runDistance >= 700 && pteras.isEmpty) {
+        setState(() {
+          pteras.add(Ptera(
+            worldLocation: Offset(
+              runDistance + MediaQuery.of(context).size.width / worlToPixelRatio + 50,
+              Random().nextInt(80).toDouble(),
+            ),
+          ));
+        });
       }
 
       for (Ground groundlet in ground) {
@@ -244,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage>
     Size screenSize = MediaQuery.of(context).size;
     List<Widget> children = [];
 
-    for (GameObject object in [...clouds, ...ground, ...cacti, dino]) {
+    for (GameObject object in [...clouds, ...ground, ...cacti, ...pteras, dino]) {
       children.add(
         AnimatedBuilder(
           animation: worldController,
@@ -277,11 +314,15 @@ class _MyHomePageState extends State<MyHomePage>
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
-            if (dino.state != DinoState.dead) {
-              dino.jump();
-            }
             if (dino.state == DinoState.dead) {
               _newGame();
+            } else if (dino.state == DinoState.idle) {
+              setState(() {
+                dino.state = DinoState.running;
+                worldController.forward();
+              });
+            } else {
+              dino.jump();
             }
           },
           child: Stack(

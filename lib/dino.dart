@@ -1,30 +1,30 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'game_object.dart';
 import 'sprite.dart';
 
 final dinoIdle = Sprite()
-  ..imagePath = "assets/images/Dino  idle.png"
+  ..imagePath = "assets/images/Dino color/Dino  idle.png"
   ..imageWidth = 88
   ..imageHeight = 94;
 
 final dinoRun1 = Sprite()
-  ..imagePath = "assets/images/Dino run 1.png"
+  ..imagePath = "assets/images/Dino color/Dino run 1.png"
   ..imageWidth = 88
   ..imageHeight = 94;
 
 final dinoRun2 = Sprite()
-  ..imagePath = "assets/images/Dino run 2.png"
+  ..imagePath = "assets/images/Dino color/Dino run 2.png"
   ..imageWidth = 88
   ..imageHeight = 94;
 
 final dinoJump = Sprite()
-  ..imagePath = "assets/images/Dino Jump.png"
+  ..imagePath = "assets/images/Dino color/Dino Jump.png"
   ..imageWidth = 88
   ..imageHeight = 94;
 
 final dinoDead = Sprite()
-  ..imagePath = "assets/images/Dino Dead.png"
+  ..imagePath = "assets/images/Dino color/Dino Dead.png"
   ..imageWidth = 88
   ..imageHeight = 94;
 

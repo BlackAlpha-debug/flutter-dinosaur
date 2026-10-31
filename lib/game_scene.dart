@@ -11,10 +11,12 @@ class GameScene extends StatelessWidget {
     required this.game,
     required this.effects,
     this.color = 0,
+    this.characterId = 'sprout',
   });
   final GameEngine game;
   final bool effects;
   final int color;
+  final String characterId;
   @override
   Widget build(BuildContext context) {
     final colors = skyGradients[game.skyPhase];
@@ -116,6 +118,7 @@ class GameScene extends StatelessWidget {
                             ),
                             child: object == game.dino
                                 ? DinoAvatar(
+                                    characterId: characterId,
                                     time: game.time,
                                     running:
                                         game.dino.state == DinoState.running,

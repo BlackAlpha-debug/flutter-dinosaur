@@ -413,7 +413,11 @@ class _GameScreenState extends State<GameScreen>
               child: SizedBox(
                 width: 170,
                 height: 170,
-                child: DinoAvatar(color: progress.color, effects: false),
+                child: DinoAvatar(
+                  characterId: progress.selectedDino,
+                  color: progress.color,
+                  effects: false,
+                ),
               ),
             ),
             const SizedBox(height: 18),
@@ -538,6 +542,7 @@ class _GameScreenState extends State<GameScreen>
                       listenable: game,
                       builder: (context, _) => GameScene(
                         game: game,
+                        characterId: progress.selectedDino,
                         color: progress.color,
                         effects:
                             _effects &&

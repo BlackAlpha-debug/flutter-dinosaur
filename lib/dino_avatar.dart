@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'dino_catalog.dart';
 
 /// One transparent, aligned runtime sprite with subtle procedural animation.
 /// Every visual offset stays small relative to the forgiving collision box.
@@ -11,22 +12,24 @@ class DinoAvatar extends StatelessWidget {
     this.jumping = false,
     this.effects = true,
     this.color = 0,
+    this.characterId = 'sprout',
   });
   final double time;
   final bool running;
   final bool jumping;
   final bool effects;
   final int color;
+  final String characterId;
 
   @override
   Widget build(BuildContext context) {
     Widget image = Image.asset(
-      'assets/runtime/dino.png',
+      characterById(characterId).asset,
       fit: BoxFit.contain,
       cacheWidth: 320,
       filterQuality: FilterQuality.medium,
     );
-    if (color != 0) {
+    if (color != 0 && characterId == 'sprout') {
       image = ColorFiltered(
         colorFilter: ColorFilter.matrix(_hue(color == 1 ? -0.9 : 2.2)),
         child: image,

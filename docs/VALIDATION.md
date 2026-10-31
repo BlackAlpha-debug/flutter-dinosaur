@@ -1,5 +1,37 @@
 # Validation record
 
+## November 1, 2026 — treasure trail and project README (1.3.0+6)
+
+- Replaced the long weekly-gift list with a daily chest, prominent claim action,
+  balance/streak chips, progress bar, a winding seven-stop board and a larger
+  600-gold final treasure. Original vector chest artwork opens when claimed;
+  extra-effects and device reduced-motion settings control its animation.
+- Fixed amounts, one claim per local date, visit counting and missed-day reward
+  preservation are unchanged. The seventh gift stays visibly completed until
+  the next eligible day, then the board resets for a fresh seven-gift trail.
+- All 53 tests pass; analyzer clean. Existing gift-page layout checks cover
+  small phones, short landscape windows and tablets at 200% text. A new UI test
+  claims all seven gifts, checks each completion state, and checks the new-day
+  reset. Numeric progress-bar semantics preserve screen-reader compatibility.
+- Web build and headless Chrome regression passed: no external requests,
+  JavaScript errors or failed HTTP responses. The daily chest, complete trail,
+  claimed chest, updated balance and progress were visually inspected. Captures
+  are `weekly-gifts.png`, `weekly-trail.png` and `weekly-gifts-claimed.png` under
+  `screenshots/`. A focused extra capture positions the whole seven-stop board
+  below the app bar for the README; no production state was modified by it.
+- Android debug APK built; manifest confirms 1.3.0 / versionCode 6, minimum API 24
+  and target API 36. Native compatibility and official 16 KB zipalign checks
+  passed for seven 64-bit libraries; all three expected ABIs are present.
+  The debug application ID is still a placeholder; permanent release identity,
+  signing and physical-device testing remain in RELEASE.md.
+- Rewrote README with project status, visual previews, controls, economy tables,
+  seven-gift rules, installation, verification, architecture, privacy, platform
+  support, release setup, documentation index, contribution/support and licensing.
+  All 29 local document/image references resolve. Existing artwork rights review
+  and original MIT attribution remain explicit.
+- Feature commit: `fdd7880`. README commit: `baf1ce6`. Gradle and the local preview
+  server were stopped afterward; Android Studio/emulator were not launched.
+
 ## November 1, 2026 — dinosaur leg animation (1.2.1+5)
 
 - All four dinosaurs now use six running poses, an airborne pose and a landing

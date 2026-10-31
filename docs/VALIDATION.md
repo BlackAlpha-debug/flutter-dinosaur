@@ -1,5 +1,33 @@
 # Validation record
 
+## November 1, 2026 — cartoon flying obstacle and simpler results (1.3.1+7)
+
+- Removed the pickup/multiplier calculation from pause/results; final score,
+  earned gold and best score remain. A screen regression check confirms the
+  breakdown text is absent.
+- Replaced the bundled pixel-art flyer with a new coral cartoon pterosaur and
+  eight-pose 640ms wingbeat. Built-in imagegen output: 1774×887 transparent RGBA;
+  inspected per-cell opaque bounds stay inside every frame. Prompt, revision
+  rationale and measured anchor offsets are documented in ANIMATION.md.
+- Extracted the existing dinosaur atlas renderer into shared SpriteAtlas;
+  dinosaurs retain their measured foot baselines and the flyer uses eye offsets
+  to stabilize its body. One cached image is sampled by source rectangles.
+  Flying obstacle dimensions, spawn timing, height and collisions are unchanged.
+- Analyzer clean; all 57 tests passed. Four new checks cover all flight poses,
+  unchanged bounds, pause/resume, reduced motion and actual Flutter rendering.
+  The optional capture exporter also passed; its eight-pose sheet was inspected
+  at `screenshots/ptera-wingbeat.png`. Existing tests for every dinosaur preview,
+  responsive layouts, coins, gifts and storage still pass.
+- Android debug build passed; native compatibility and official 16 KB zipalign
+  checks passed. The APK was installed successfully as an update on the connected
+  phone without clearing app data. Package inspection confirmed version 1.3.1,
+  versionCode 7, minimum API 24 and target API 36. Flight feel/frame pacing on
+  physical hardware was not measured by the install/package check.
+- README feature/version/architecture and asset documentation updated; all 30
+  local README references resolve. Score simplification commit: `f794edd`.
+  Artwork/rendering commit: `d1682bf`. Gradle was stopped after the build;
+  Android Studio and emulator were not launched.
+
 ## November 1, 2026 — treasure trail and project README (1.3.0+6)
 
 - Replaced the long weekly-gift list with a daily chest, prominent claim action,

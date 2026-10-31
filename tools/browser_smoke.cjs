@@ -30,6 +30,27 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
       const node = page.locator('flt-semantics-placeholder');
       if (await node.count()) await node.evaluate(element => element.click());
     }
+    const animationChecks = [];
+    async function checkAnimation(name) {
+      await tapScrolling('Run preview');
+      await page.getByRole('button', { name: 'Stop running', exact: true }).waitFor();
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(250);
+      const clip = { x: 55, y: 80, width: 280, height: 240 };
+      const first = await page.screenshot({ clip,
+        path: path.join(output, name.toLowerCase() + '-run-a.png') });
+      await page.waitForTimeout(130);
+      const second = await page.screenshot({ clip,
+        path: path.join(output, name.toLowerCase() + '-run-b.png') });
+      if (first.equals(second)) throw new Error(name + ' running preview is frozen');
+      await tapScrolling('Try a hop');
+      await page.waitForTimeout(200);
+      await page.screenshot({ path: path.join(output, name.toLowerCase() + '-jump.png') });
+      await page.waitForTimeout(650);
+      await tapScrolling('Stop running');
+      await page.getByRole('button', { name: 'Run preview', exact: true }).waitFor();
+      animationChecks.push(name + ': changing run frames, jump and stop');
+    }
     const errors = [];
     const external = new Set();
     let stage = 'startup';
@@ -114,9 +135,13 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await tapScrolling('Dino Shop');
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'shop.png') });
+    await tapScrolling('Preview Sprout');
+    await checkAnimation('Sprout');
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
     await tapScrolling('Preview Bramble');
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'dino-preview.png') });
+    await checkAnimation('Bramble');
     await tapScrolling('Buy for 1,000 gold');
     await page.getByRole('button', { name: 'Buy and use', exact: true }).click();
     await page.getByRole('button', { name: 'Equipped', exact: true }).waitFor();
@@ -125,6 +150,7 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
       await tapScrolling('Preview ' + name);
       await page.waitForTimeout(500);
       await page.screenshot({ path: path.join(output, name.toLowerCase() + '-preview.png') });
+      await checkAnimation(name);
       await page.getByRole('button', { name: 'Back', exact: true }).click();
     }
     await page.getByRole('button', { name: 'Back', exact: true }).click();
@@ -153,7 +179,7 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.screenshot({ path: path.join(output, 'reloaded.png') });
     await page.setViewportSize({ width: 320, height: 568 });
     await page.screenshot({ path: path.join(output, 'small-screen.png') });
-    const result = { errors, externalRequests: [...external], checks: [
+    const result = { errors, externalRequests: [...external], animationChecks, checks: [
       'menu', 'start', 'gameplay', 'pause', 'settings', 'resume', 'collision/results',
       'home', 'complete bundled privacy policy/contact',
       'stored best-score persistence after page reload', 'small screen' ],

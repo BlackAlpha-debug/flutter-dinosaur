@@ -1,6 +1,12 @@
 {
   "errors": [],
   "externalRequests": [],
+  "animationChecks": [
+    "Sprout: changing run frames, jump and stop",
+    "Bramble: changing run frames, jump and stop",
+    "Sunny: changing run frames, jump and stop",
+    "Nova: changing run frames, jump and stop"
+  ],
   "checks": [
     "menu",
     "start",
@@ -14,7 +20,7 @@
     "stored best-score persistence after page reload",
     "small screen"
   ],
-  "savedBestScore": 86,
+  "savedBestScore": 85,
   "shopFixtureStartingGold": 1200,
   "economyChecks": [
     "preview",

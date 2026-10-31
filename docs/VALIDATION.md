@@ -1,5 +1,32 @@
 # Validation record
 
+## November 1, 2026 — dinosaur leg animation (1.2.1+5)
+
+- All four dinosaurs now use six running poses, an airborne pose and a landing
+  crouch, with measured foot baselines. Stride cadence follows world distance;
+  pause/background/game-over cannot advance the animation. Landing lasts 100ms
+  and a new jump immediately interrupts it. Existing physics/hitboxes are intact.
+- Static menus/cards retain their portraits. Preview pages have Run preview,
+  Stop running and Try a hop controls using the gameplay atlases. Reduced-effects
+  mode retains leg movement; OS reduced animation holds a neutral pose and
+  disables preview controls.
+- Analyzer clean; all 52 tests passed. Nine new checks cover the stride loop,
+  pose priorities, reduced motion, pause/restart/landing timers, all four preview
+  run/hop/stop flows and device animation settings.
+- Web build passed. Headless installed Chrome confirmed changing run frames,
+  jump and stop for every character, plus the existing gameplay/pause/settings,
+  privacy, purchase, collection, gift and persistence flows. No external requests,
+  JavaScript errors or failed HTTP responses. Run-frame pairs, all four airborne
+  previews and the gameplay screenshot were inspected for feet and clipping.
+  Reproducible procedure: `tools/browser_smoke.cjs`; results and captures are in
+  `screenshots/`. Screenshots show sampled poses, not a measured frame-rate test.
+- Android debug APK built successfully. Native ELF and ZIP 16 KB alignment checks
+  passed for all seven 64-bit libraries, with ARM32/ARM64/x86-64 present. Official
+  Android SDK `zipalign -c -P 16 4` also passed. Gradle and the local preview server
+  were stopped afterward; Android Studio/emulator were never launched.
+- Physical-device animation feel and low-end frame pacing remain unmeasured.
+  A signed release AAB and owner Play Console requirements remain in RELEASE.md.
+
 ## November 1, 2026 — gold, characters and weekly gifts
 
 - Version 1.2.0+4 adds three difficulty multipliers, a local gold wallet,

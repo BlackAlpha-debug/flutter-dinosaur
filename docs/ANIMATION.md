@@ -52,3 +52,13 @@ animation ticker. Measured foot baselines keep contact frames on the same ground
 Each six-frame stride covers 200 logical pixels, giving 8.4–17.4 frames/second
 across the existing speed range. Landing lasts 100ms of simulation time and a
 new jump interrupts it immediately. Collision boxes and physics are unchanged.
+
+## Completed phases
+
+1. `61dde5a`: initial four animation atlases and this plan. Bramble's final
+   padding revision is included in phase 2.
+2. `dab6477`: atlas renderer, deterministic stride, landing timer, baseline
+   alignment, run/hop preview controls, accessibility behavior and nine tests.
+3. Final verification commit: browser regression script and inspected captures,
+   52 passing tests, clean analyzer, successful web/Android builds and native
+   alignment checks. Details and limits are in VALIDATION.md.

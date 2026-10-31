@@ -9,6 +9,8 @@ import 'game_audio.dart';
 import 'player_progress.dart';
 import 'app_info.dart';
 import 'dino_avatar.dart';
+import 'frame_clock.dart';
+import 'privacy_policy_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,7 +79,8 @@ class _GameScreenState extends State<GameScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final GameEngine game;
   late final Ticker _ticker;
-  Duration? _previous;
+  final _frameClock = FrameClock();
+  double _lastHudUpdate = 0;
   late final PlayerProgress progress;
   int _bankedStars = 0;
   RunState _lastState = RunState.menu;
@@ -96,11 +99,8 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _tick(Duration elapsed) {
-    final previous = _previous;
-    _previous = elapsed;
-    if (previous != null) {
-      game.advance((elapsed - previous).inMicroseconds / 1000000);
-    }
+    final seconds = _frameClock.consume(elapsed);
+    if (seconds > 0) game.advance(seconds);
   }
 
   void _progressChanged() {
@@ -116,6 +116,7 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _gameChanged() {
+    final stateChanged = game.state != _lastState;
     final earned = game.runStars - _bankedStars;
     if (earned > 0) {
       _bankedStars = game.runStars;
@@ -133,13 +134,19 @@ class _GameScreenState extends State<GameScreen>
       _lastState = game.state;
     }
     if (game.state == RunState.playing && !_ticker.isActive) {
-      _previous = null;
+      _frameClock.reset();
       _ticker.start();
     } else if (game.state != RunState.playing && _ticker.isActive) {
       _ticker.stop();
-      _previous = null;
+      _frameClock.reset();
     }
-    if (mounted) setState(() {});
+    // The world listens independently; rebuild HUD/controls at most five times
+    // per second, or immediately for a state transition/star collection.
+    if (mounted &&
+        (stateChanged || earned > 0 || game.time - _lastHudUpdate >= 0.2)) {
+      _lastHudUpdate = game.time;
+      setState(() {});
+    }
   }
 
   @override
@@ -148,6 +155,12 @@ class _GameScreenState extends State<GameScreen>
       game.pause();
       unawaited(widget.audio?.stop());
     }
+  }
+
+  @override
+  void didChangeMetrics() {
+    // A fold, rotation, or split-screen resize must not cost the player a run.
+    game.pause();
   }
 
   @override
@@ -164,6 +177,7 @@ class _GameScreenState extends State<GameScreen>
 
   void _start() {
     _bankedStars = 0;
+    _lastHudUpdate = 0;
     game.start(_difficulty);
   }
 
@@ -173,6 +187,7 @@ class _GameScreenState extends State<GameScreen>
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, updateDialog) => AlertDialog(
+          scrollable: true,
           title: const Text('Make it your adventure'),
           content: SingleChildScrollView(
             child: Column(
@@ -260,75 +275,60 @@ class _GameScreenState extends State<GameScreen>
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        scrollable: true,
         title: const Text('For grown-ups'),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Publisher: $publisherName',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Privacy & offline play',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
-              Text(privacySummary),
+              const SizedBox(height: 8),
+              const Text(privacySummary),
               if (supportEmail != '') ...[
-                SizedBox(height: 12),
-                SelectableText('Support: $supportEmail'),
+                const SizedBox(height: 12),
+                const SelectableText('Support: $supportEmail'),
               ],
               if (privacyPolicyUrl != '') ...[
-                SizedBox(height: 8),
-                SelectableText('Public policy: $privacyPolicyUrl'),
+                const SizedBox(height: 8),
+                const SelectableText('Public policy: $privacyPolicyUrl'),
               ],
-              SizedBox(height: 12),
-              Text('Designed for ages 6–8. Take breaks and play together.'),
+              const SizedBox(height: 12),
+              const Text(
+                'Designed for ages 6–8. Take breaks and play together.',
+              ),
+              TextButton(
+                onPressed: () => showLicensePage(
+                  context: context,
+                  applicationName: 'Little Dino',
+                  applicationLegalese: 'Publisher: $publisherName',
+                ),
+                child: const Text('Licenses'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const PrivacyPolicyPage(),
+                  ),
+                ),
+                child: const Text('Full privacy policy'),
+              ),
+              TextButton(
+                onPressed: () => _resetProgress(dialogContext),
+                child: const Text('Reset progress'),
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => showLicensePage(
-              context: context,
-              applicationName: 'Little Dino',
-              applicationLegalese: 'Publisher: $publisherName',
-            ),
-            child: const Text('Licenses'),
-          ),
-          TextButton(
-            onPressed: () async {
-              final reset = await showDialog<bool>(
-                context: dialogContext,
-                builder: (confirmationContext) => AlertDialog(
-                  title: const Text('Erase local progress?'),
-                  content: const Text(
-                    'This resets all scores, stars, colors and settings on this device.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pop(confirmationContext, false),
-                      child: const Text('Keep progress'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(confirmationContext, true),
-                      child: const Text('Erase progress'),
-                    ),
-                  ],
-                ),
-              );
-              if (reset == true && mounted) {
-                progress.reset();
-                _bankedStars = 0;
-                game.home();
-              }
-            },
-            child: const Text('Reset progress'),
-          ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Done'),
@@ -336,6 +336,34 @@ class _GameScreenState extends State<GameScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _resetProgress(BuildContext dialogContext) async {
+    final reset = await showDialog<bool>(
+      context: dialogContext,
+      builder: (confirmationContext) => AlertDialog(
+        scrollable: true,
+        title: const Text('Erase local progress?'),
+        content: const Text(
+          'This resets all scores, stars, colors and settings on this device.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(confirmationContext, false),
+            child: const Text('Keep progress'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(confirmationContext, true),
+            child: const Text('Erase progress'),
+          ),
+        ],
+      ),
+    );
+    if (reset == true && mounted) {
+      progress.reset();
+      _bankedStars = 0;
+      game.home();
+    }
   }
 
   @override
@@ -451,28 +479,38 @@ class _GameScreenState extends State<GameScreen>
     ),
   );
 
+  Widget _counter(String label, int value) => Expanded(
+    child: Semantics(
+      label: '$label $value',
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '$value',
+              style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
   Widget _playfield() => Column(
     children: [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
-            Expanded(
-              child: Text(
-                'Score ${game.score}',
-                style: const TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            Semantics(
-              label: '${game.runStars} stars this run',
-              child: Text(
-                'Stars ${game.runStars}',
-                style: const TextStyle(fontSize: 20, color: leaf),
-              ),
-            ),
+            _counter('Score', game.score),
+            _counter('Stars', game.runStars),
             const SizedBox(width: 12),
             IconButton.filledTonal(
               tooltip: 'Pause game',
@@ -496,11 +534,17 @@ class _GameScreenState extends State<GameScreen>
                 behavior: HitTestBehavior.opaque,
                 onTap: _jump,
                 child: ExcludeSemantics(
-                  child: GameScene(
-                    game: game,
-                    color: progress.color,
-                    effects:
-                        _effects && !MediaQuery.disableAnimationsOf(context),
+                  child: RepaintBoundary(
+                    child: ListenableBuilder(
+                      listenable: game,
+                      builder: (context, _) => GameScene(
+                        game: game,
+                        color: progress.color,
+                        effects:
+                            _effects &&
+                            !MediaQuery.disableAnimationsOf(context),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -541,7 +585,7 @@ class _GameScreenState extends State<GameScreen>
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                'Score ${game.score} · ${game.runStars} stars',
+                                'Score ${game.score} · Stars ${game.runStars}',
                                 style: const TextStyle(fontSize: 20),
                               ),
                               const SizedBox(height: 20),
@@ -581,16 +625,18 @@ class _GameScreenState extends State<GameScreen>
           ],
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: Text(
-          game.state == RunState.playing
-              ? 'Tap to hop · Tap again to go higher!'
-              : 'Your next adventure is just a hop away.',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      if (MediaQuery.sizeOf(context).height >= 600 &&
+          MediaQuery.textScalerOf(context).scale(16) <= 24)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Text(
+            game.state == RunState.playing
+                ? 'Tap to hop · Tap again to go higher!'
+                : 'Your next adventure is just a hop away.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
         ),
-      ),
     ],
   );
 }

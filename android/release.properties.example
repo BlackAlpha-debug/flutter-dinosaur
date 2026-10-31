@@ -1,4 +1,4 @@
 # Copy to release.properties (ignored by Git); supply your final details.
 applicationId=YOUR.PERMANENT.APPLICATION_ID
-supportEmail=YOUR_SUPPORT_EMAIL
+supportEmail=muzammiljawad6@gmail.com
 privacyPolicyUrl=https://YOUR_PUBLIC_PRIVACY_POLICY

@@ -65,11 +65,13 @@ void main() {
     await tester.ensureVisible(find.text('For grown-ups'));
     await tester.tap(find.text('For grown-ups'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Reset progress'));
     await tester.tap(find.text('Reset progress'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Keep progress'));
     await tester.pumpAndSettle();
     expect(progress.stars, 15);
+    await tester.ensureVisible(find.text('Reset progress'));
     await tester.tap(find.text('Reset progress'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Erase progress'));

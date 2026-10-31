@@ -9,8 +9,8 @@ abstract class GameAudio {
 
 /// Bundled effects only. No URL sources, microphone, music or network access.
 class LocalGameAudio implements GameAudio {
-  final AudioPlayer _jump = AudioPlayer();
-  final AudioPlayer _reward = AudioPlayer();
+  AudioPlayer? _jump;
+  AudioPlayer? _reward;
   Future<void> _pending = Future.value();
   int _generation = 0;
   bool _disposed = false;
@@ -21,7 +21,9 @@ class LocalGameAudio implements GameAudio {
     _pending = _pending.then((_) async {
       if (_disposed || generation != _generation) return;
       try {
-        final player = sound == 'jump' ? _jump : _reward;
+        final player = sound == 'jump'
+            ? (_jump ??= AudioPlayer())
+            : (_reward ??= AudioPlayer());
         await player.play(AssetSource('audio/$sound.wav'), volume: 0.3);
       } catch (error) {
         // Audio is optional; plugin/device failure must not end a run.
@@ -37,7 +39,10 @@ class LocalGameAudio implements GameAudio {
     _pending = _pending.then((_) async {
       if (_disposed) return;
       try {
-        await Future.wait([_jump.stop(), _reward.stop()]);
+        await Future.wait([
+          if (_jump != null) _jump!.stop(),
+          if (_reward != null) _reward!.stop(),
+        ]);
       } catch (error) {
         debugPrint('Could not stop optional audio: $error');
       }
@@ -50,7 +55,10 @@ class LocalGameAudio implements GameAudio {
     await stop();
     _disposed = true;
     try {
-      await Future.wait([_jump.dispose(), _reward.dispose()]);
+      await Future.wait([
+        if (_jump != null) _jump!.dispose(),
+        if (_reward != null) _reward!.dispose(),
+      ]);
     } catch (error) {
       debugPrint('Could not dispose optional audio: $error');
     }

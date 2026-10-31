@@ -3,8 +3,9 @@
 ## Current owner decisions
 
 Publisher is BlackAlpha-debug. Audience is ages 6–8, offline, no ads or purchases.
-Permanent application ID, support email, policy URL, upload key and Play Console
-account details are not supplied. A production build deliberately fails without
+Privacy/support contact is muzammiljawad6@gmail.com. Permanent application ID,
+public Notion policy URL, upload key and Play Console account details are not
+supplied. A production build deliberately fails without
 them. A debug APK is for testing only. No Android Studio/emulator is required.
 
 ## Local checks
@@ -26,7 +27,7 @@ for 14 days for device testing. This is not a Play release bundle.
    fill in a permanent lowercase application ID, support email and public policy
    URL. The namespace/Kotlin class can remain unchanged: the application ID
    defines the Play app identity. Changing that ID after launch creates a new app.
-2. Complete and host `docs/PRIVACY_POLICY_DRAFT.md`; verify the public URL without
+2. Publish `docs/PRIVACY_POLICY.md` on a public read-only Notion page; verify its URL without
    signing in. The release helper passes the support contact/hosted URL into the
    grown-ups screen using Dart defines. The screen also contains the full offline
    policy. Plain `flutter build` does not supply these optional display defines.
@@ -39,7 +40,7 @@ for 14 days for device testing. This is not a Play release bundle.
 5. Set an unused increasing versionCode using `pubspec.yaml` or build flags.
 6. Run `powershell -File tools/build_release.ps1`. It validates identity and key
    file configuration before invoking Flutter, then embeds the public contact
-   details. The current pubspec version is 1.1.0+2; increase it for later uploads.
+   details. The current pubspec version is 1.1.1+3; increase it for later uploads.
    The artifact is under `build/app/outputs/bundle/release/`.
 7. Inspect the bundle's package name, target SDK, merged permissions and native
    alignment. Verify 64-bit and 16 KB support with Android tooling and a suitable

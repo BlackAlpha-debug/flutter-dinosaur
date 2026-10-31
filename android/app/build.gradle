@@ -54,7 +54,7 @@ android {
 
     defaultConfig {
         applicationId releaseProperties.getProperty('applicationId', 'com.example.flutter_dinosaur')
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

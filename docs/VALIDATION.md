@@ -1,4 +1,31 @@
-# Validation record — 2026-10-31
+# Validation record
+
+## November 1, 2026 — privacy and Android optimization
+
+- Completed the publication-ready policy with the confirmed support/privacy
+  email, local progress handling, optional support correspondence, retention,
+  deletion and Notion/Google platform distinctions. Bundled the same document
+  behind **For grown-ups → Full privacy policy**, readable offline.
+- All 31 automated tests passed. Added 30/60/90/120/144 Hz clock checks and a
+  viewport matrix covering small phones, 200% text/notches, narrow split-screen,
+  portrait/landscape tablets, short windows and foldable-sized resizing.
+- Fixed discovered HUD/footer and grown-ups-action overflows. Layout tests read
+  the actual policy text through a synchronous test bundle; browser validation
+  separately checks real asset loading. Analyzer clean.
+- Native packaging checks on the final version 1.1.1+3 debug APK passed for all seven 64-bit
+  libraries: ELF load alignment and uncompressed ZIP alignment. ARM32, ARM64 and
+  x86-64 were present. The Android SDK's official `zipalign -c -P 16 4` also passed.
+- Version 1.1.1+3 Android debug build passed. Manifest confirms API 24 minimum,
+  target API 36 and version code 3. ZIP inspection confirms the complete policy
+  asset is present with the correct contact email.
+- Final headless Chrome pass completed all 11 checks, including real HTTP loading
+  of the bundled full policy/contact and saved-score reload. Zero external
+  requests, JavaScript errors or failed HTTP responses. New policy/gameplay
+  screenshots were inspected; results are in `screenshots/browser-results.json`.
+- No physical devices, Android Studio or emulator were used. Per-device frame
+  time, memory, battery and thermal performance still need profile/release tests.
+
+## October 31, 2026 — initial implementation
 
 ## Verified locally
 

@@ -125,3 +125,8 @@ leaderboards, streak pressure, notifications and monetization in this first rele
   ten flow checks with zero external requests/errors. Screenshots inspected and
   APK version/SDK/backup settings checked. Remaining store/device checks are in
   VALIDATION.md. Git commit/push follows this verified local implementation.
+- November 1 follow-up: completed the public Notion-ready policy with the owner's
+  contact email and added the same policy offline in-app. Optimized render/HUD
+  cadence, rain and lazy audio initialization; fixed large-text/short-window
+  overflows and resize handling. All 31 tests, analyzer, Android 1.1.1+3 debug
+  build, native ELF/ZIP alignment checks and 11 browser flow checks passed.

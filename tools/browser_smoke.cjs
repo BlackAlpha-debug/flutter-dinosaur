@@ -57,6 +57,22 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.getByRole('button', { name: 'Try again', exact: true }).waitFor({ timeout: 15000 });
     await page.screenshot({ path: path.join(output, 'results.png') });
     await page.getByRole('button', { name: 'Back home', exact: true }).click();
+    stage = 'privacy';
+    await page.getByRole('button', { name: 'For grown-ups', exact: true }).click();
+    await page.mouse.move(195, 450);
+    await page.mouse.wheel(0, 1800);
+    const policyResponse = page.waitForResponse(response =>
+      response.url().includes('/docs/PRIVACY_POLICY.md') && response.status() === 200);
+    await page.getByRole('button', { name: 'Full privacy policy', exact: true }).click();
+    const policy = await (await policyResponse).text();
+    if (!policy.includes('muzammiljawad6@gmail.com') || !policy.includes('November 1, 2026')) {
+      throw new Error('Bundled policy contact/effective date is incorrect');
+    }
+    await page.getByRole('button', { name: 'Back', exact: true }).waitFor();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(output, 'privacy.png') });
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await page.getByRole('button', { name: 'Done', exact: true }).click();
     stage = 'reload';
     await page.reload({ waitUntil: 'networkidle' });
     const placeholder = page.locator('flt-semantics-placeholder');
@@ -73,7 +89,8 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.screenshot({ path: path.join(output, 'small-screen.png') });
     const result = { errors, externalRequests: [...external], checks: [
       'menu', 'start', 'gameplay', 'pause', 'settings', 'resume', 'collision/results',
-      'home', 'stored best-score persistence after page reload', 'small screen' ],
+      'home', 'complete bundled privacy policy/contact',
+      'stored best-score persistence after page reload', 'small screen' ],
       savedBestScore: saved.best_easy };
     await fs.writeFile(path.join(output, 'browser-results.json'), JSON.stringify(result, null, 2));
     console.log(JSON.stringify(result, null, 2));

@@ -14,4 +14,5 @@ Invoke-Checked flutter @('analyze', '--no-pub')
 Invoke-Checked flutter @('test', '--no-pub')
 if (-not $SkipAndroidBuild) {
     Invoke-Checked flutter @('build', 'apk', '--debug', '--no-pub')
+    Invoke-Checked python @('tools/check_android_compatibility.py', 'build/app/outputs/flutter-apk/app-debug.apk')
 }

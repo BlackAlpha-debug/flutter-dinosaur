@@ -56,7 +56,8 @@ emulator is required. Connect a physical phone for Android gameplay verification
 
 - [Detailed implementation phases](docs/IMPLEMENTATION_PLAN.md)
 - [Android signing and Play Console checklist](docs/RELEASE.md)
-- [Privacy-policy draft — complete before hosting](docs/PRIVACY_POLICY_DRAFT.md)
+- [Complete privacy policy — ready to publish on Notion](docs/PRIVACY_POLICY.md)
+- [Android compatibility and optimization](docs/ANDROID_COMPATIBILITY.md)
 - [Asset provenance and rights checks](docs/ASSETS.md)
 - [Validation results and remaining manual checks](docs/VALIDATION.md)
 

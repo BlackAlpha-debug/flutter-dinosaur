@@ -10,7 +10,8 @@ character, terrain, cloud, small cactus/bird assets, LICENSE and local sounds.
 - Reference: existing `assets/images/Dino color/Dino run 1.png`.
 - Transparency was inspected; corner alpha is zero. Runtime decode is capped at
   320 pixels wide, reused by the image cache. Color variants use a hue matrix.
-- Animation is code-driven bounce/tilt, not a new frame-by-frame sprite sheet.
+- This portrait remains static in menus. Gameplay now uses the frame-by-frame
+  atlases documented in [ANIMATION.md](ANIMATION.md).
 - Prompt: isolate the original friendly right-facing green dinosaur; remove all
   scenic background, footprints, ground and shadow; preserve pose, colors, face,
   linework and complete limbs/tail; true transparent background, square canvas,
@@ -30,6 +31,12 @@ Exact tool prompt:
 > dinosaur, including the spaces between limbs. No scenery, no text, no
 > checkerboard baked into pixels, no new objects. The isolated silhouette must
 > read cleanly at 88 pixels high.
+
+## Weekly gift artwork
+
+The weekly gift treasure chest is original vector artwork drawn by
+`lib/treasure_chest.dart`, with a short lid-opening animation. It needs no bitmap
+asset or external download and respects reduced-effects/device motion settings.
 
 ## Audio
 

@@ -32,8 +32,10 @@ universal compatibility across every Android device or manufacturer is not claim
 - Scroll settings and grown-ups actions within the dialog; keep Done visible.
   In short/wide windows, crop unused underground space to enlarge the play area
   while preserving the entire jump arc and logical collision coordinates.
-- Keep the transparent dinosaur decode capped at 320 pixels and clouds at 184;
-  use only selected runtime assets. Image cache limits are managed by Flutter.
+- Keep static dinosaur portraits capped at 320 decoded pixels, animation atlases
+  at 1536px sheet width, and clouds at 184px. Atlases are cached and rendered by
+  source rectangle rather than decoded for each frame. The weekly treasure chest
+  uses vector drawing with no image decode. Image cache limits are managed by Flutter.
 - Pin minimum API explicitly, preserve native ABI coverage and add repeatable
   ZIP/ELF alignment checks to local verification and CI.
 

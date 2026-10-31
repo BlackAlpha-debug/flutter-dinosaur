@@ -1,8 +1,47 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dinosaur/weekly_gifts_page.dart';
 import 'package:flutter_dinosaur/player_progress.dart';
 import 'player_progress_test.dart' show MemoryBackend;
 
 void main() {
+  testWidgets('trail keeps the seventh gift completed until the next day', (
+    tester,
+  ) async {
+    var now = DateTime(2026, 11, 1);
+    final progress = PlayerProgress(clock: () => now);
+    await tester.pumpWidget(
+      MaterialApp(home: WeeklyGiftsPage(progress: progress)),
+    );
+    for (var gift = 0; gift < 7; gift++) {
+      if (gift > 0) {
+        now = now.add(const Duration(days: 1));
+        progress.refreshCalendar();
+        await tester.pumpAndSettle();
+      }
+      final claim = find.text('Claim ${PlayerProgress.giftRewards[gift]} gold');
+      await tester.ensureVisible(claim);
+      await tester.tap(claim);
+      await tester.pumpAndSettle();
+      expect(find.text('Treasure collected!'), findsOneWidget);
+      expect(
+        find.text('${gift + 1} of 7 gifts collected on this trail'),
+        findsOneWidget,
+      );
+      expect(find.text('Gift claimed for today'), findsOneWidget);
+    }
+    expect(progress.coins, 2000);
+    expect(find.text('Next gift: 100 gold on a new day.'), findsOneWidget);
+    now = now.add(const Duration(days: 1));
+    progress.refreshCalendar();
+    await tester.pumpAndSettle();
+    expect(find.text('0 of 7 gifts collected on this trail'), findsOneWidget);
+    expect(find.text('Claim 100 gold'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    progress.dispose();
+  });
+
   test('opening on consecutive days counts visits even without claiming', () {
     var now = DateTime(2026, 11, 1);
     final progress = PlayerProgress(clock: () => now);

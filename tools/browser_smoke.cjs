@@ -158,8 +158,15 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await tapScrolling(/Weekly Gifts/);
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'weekly-gifts.png') });
+    await page.mouse.move(195, 480);
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(output, 'weekly-trail.png') });
     await tapScrolling('Claim 100 gold');
     await page.getByRole('button', { name: 'Gift claimed for today', exact: true }).waitFor();
+    await page.mouse.wheel(0, -6000);
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(output, 'weekly-gifts-claimed.png') });
     await page.getByRole('button', { name: 'Back', exact: true }).click();
     await tapScrolling('My Dinosaurs');
     await tapScrolling('Preview Bramble');

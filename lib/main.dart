@@ -12,6 +12,7 @@ import 'dino_avatar.dart';
 import 'frame_clock.dart';
 import 'privacy_policy_page.dart';
 import 'dino_shop_page.dart';
+import 'weekly_gifts_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -494,6 +495,19 @@ class _GameScreenState extends State<GameScreen>
               'Offline fun. No ads. Just adventure.',
               textAlign: TextAlign.center,
               style: TextStyle(color: leaf),
+            ),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => WeeklyGiftsPage(progress: progress),
+                ),
+              ),
+              icon: const Icon(Icons.card_giftcard),
+              label: Text(
+                progress.giftAvailable
+                    ? 'Weekly Gifts · Gift ready'
+                    : 'Weekly Gifts',
+              ),
             ),
             TextButton(
               onPressed: _grownUps,

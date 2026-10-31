@@ -21,8 +21,38 @@ class DeviceProgressBackend implements ProgressBackend {
 
 /// Only noncritical game preferences are stored. Never stores identifiers.
 class PlayerProgress extends ChangeNotifier {
-  PlayerProgress({this.backend});
+  PlayerProgress({this.backend, DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now;
   final ProgressBackend? backend;
+  final DateTime Function() _clock;
+  static const giftRewards = [100, 150, 200, 250, 300, 400, 600];
+  int? _lastClaimDay;
+  int _nextGift = 0;
+  int _visitStreak = 0;
+  int get nextGift => _nextGift;
+  int get nextGiftAmount => giftRewards[_nextGift];
+  int get _today {
+    final now = _clock();
+    return DateTime.utc(now.year, now.month, now.day).millisecondsSinceEpoch ~/
+        Duration.millisecondsPerDay;
+  }
+
+  bool get giftAvailable => _lastClaimDay == null || _today > _lastClaimDay!;
+  int get visitStreak =>
+      _lastClaimDay != null && _today - _lastClaimDay! <= 1 ? _visitStreak : 0;
+
+  int claimGift() {
+    final today = _today;
+    if (_lastClaimDay != null && today <= _lastClaimDay!) return 0;
+    final amount = nextGiftAmount;
+    _visitStreak = _lastClaimDay == today - 1 ? _visitStreak + 1 : 1;
+    _lastClaimDay = today;
+    _nextGift = (_nextGift + 1) % giftRewards.length;
+    _coins += amount;
+    _save();
+    return amount;
+  }
+
   final Map<String, int> _best = {};
   Difficulty difficulty = Difficulty.easy;
   int stars = 0;
@@ -76,6 +106,9 @@ class PlayerProgress extends ChangeNotifier {
       );
       final selected = data['selectedDino'] as String? ?? 'sprout';
       _selectedDino = owns(selected) ? selected : 'sprout';
+      _lastClaimDay = (data['lastClaimDay'] as num?)?.toInt();
+      _nextGift = ((data['nextGift'] as num?)?.toInt() ?? 0).clamp(0, 6);
+      _visitStreak = max(0, (data['visitStreak'] as num?)?.toInt() ?? 0);
       if (data['version'] == 1) {
         _save();
         await flush();
@@ -164,6 +197,9 @@ class PlayerProgress extends ChangeNotifier {
       ..clear()
       ..add('sprout');
     _selectedDino = 'sprout';
+    _lastClaimDay = null;
+    _nextGift = 0;
+    _visitStreak = 0;
     color = 0;
     difficulty = Difficulty.easy;
     effects = true;
@@ -177,6 +213,9 @@ class PlayerProgress extends ChangeNotifier {
   void _save() {
     final snapshot = jsonEncode({
       'version': 2,
+      'lastClaimDay': _lastClaimDay,
+      'nextGift': _nextGift,
+      'visitStreak': _visitStreak,
       'coins': _coins,
       'owned': _owned.toList(),
       'selectedDino': _selectedDino,

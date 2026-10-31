@@ -39,7 +39,7 @@ void main() {
     await tester.ensureVisible(find.text('Play · Easy'));
     await tester.tap(find.text('Play · Easy'));
     await tester.pump();
-    game.stars.add(Collectible(const Offset(8.4, 50)));
+    game.coins.add(Collectible(const Offset(8.4, 50)));
     game.advance(0.02);
     game.pause();
     await tester.pump();

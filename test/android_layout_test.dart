@@ -89,7 +89,7 @@ void main() {
       await tester.pump();
       expect(game.state, RunState.playing);
       game.distance = 123456;
-      game.runStars = 1234;
+      game.runPickups = 1234;
       game.pause();
       await tester.pump();
       expect(tester.takeException(), isNull);

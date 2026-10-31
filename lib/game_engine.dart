@@ -11,8 +11,9 @@ import 'ptera.dart';
 enum RunState { menu, playing, paused, gameOver }
 
 enum Difficulty {
-  easy('Easy', 28, 40, 1.65, 900),
-  normal('Normal', 36, 52, 1.45, 650);
+  easy('Easy', 28, 40, 1.65, 900, 1),
+  normal('Normal', 36, 52, 1.45, 650, 2),
+  hard('Hard', 42, 58, 1.4, 550, 3);
 
   const Difficulty(
     this.label,
@@ -20,6 +21,7 @@ enum Difficulty {
     this.maxSpeed,
     this.obstacleSeconds,
     this.birdDistance,
+    this.coinMultiplier,
   );
 
   final String label;
@@ -27,6 +29,7 @@ enum Difficulty {
   final double maxSpeed;
   final double obstacleSeconds;
   final double birdDistance;
+  final int coinMultiplier;
 }
 
 class Collectible {
@@ -61,12 +64,13 @@ class GameEngine extends ChangeNotifier {
   double time = 0;
   double _accumulator = 0;
   double _nextObstacle = 95;
-  double _nextStar = 65;
-  int runStars = 0;
+  double _nextCoin = 65;
+  int runPickups = 0;
   final List<GameObject> obstacles = [];
-  final List<Collectible> stars = [];
+  final List<Collectible> coins = [];
 
   int get score => distance.floor();
+  int get goldEarned => runPickups * 10 * difficulty.coinMultiplier;
   int get skyPhase => (distance ~/ 180) % skyGradients.length;
   int get terrain => (distance ~/ 500) % 3;
 
@@ -76,12 +80,12 @@ class GameEngine extends ChangeNotifier {
     distance = 0;
     speed = selected.startSpeed;
     time = 0;
-    runStars = 0;
+    runPickups = 0;
     _accumulator = 0;
     _nextObstacle = 95;
-    _nextStar = 65;
+    _nextCoin = 65;
     obstacles.clear();
-    stars.clear();
+    coins.clear();
     state = RunState.playing;
     notifyListeners();
   }
@@ -103,7 +107,7 @@ class GameEngine extends ChangeNotifier {
     state = RunState.menu;
     dino = Dino();
     obstacles.clear();
-    stars.clear();
+    coins.clear();
     distance = 0;
     time = 0;
     _accumulator = 0;
@@ -150,10 +154,22 @@ class GameEngine extends ChangeNotifier {
           difficulty.maxSpeed *
               (difficulty.obstacleSeconds + _random.nextDouble() * 0.4);
     }
-    if (_nextStar - distance < 55) {
+    if (_nextCoin - distance < 55) {
       // Stars stay close to the ground and are optional; no risky mandatory path.
-      stars.add(Collectible(Offset(_nextStar, 70)));
-      _nextStar += 30 + _random.nextDouble() * 22;
+      for (var i = 0; i < 3; i++) {
+        final x = _nextCoin + i * 3;
+        final coin = Collectible(Offset(x, i == 1 ? 115 : 55));
+        final nearFutureObstacle =
+            x >= _nextObstacle - 6 && x <= _nextObstacle + 20;
+        final nearObstacle = obstacles.any(
+          (o) => o
+              .getRect(viewport, distance)
+              .inflate(40)
+              .overlaps(coin.rect(distance)),
+        );
+        if (!nearFutureObstacle && !nearObstacle) coins.add(coin);
+      }
+      _nextCoin += 70 + _random.nextDouble() * 20;
     }
 
     for (final object in obstacles) {
@@ -170,10 +186,10 @@ class GameEngine extends ChangeNotifier {
         return;
       }
     }
-    stars.removeWhere((star) {
+    coins.removeWhere((star) {
       final rect = star.rect(distance);
       if (player.overlaps(rect)) {
-        runStars++;
+        runPickups++;
         return true;
       }
       return rect.right < 0;

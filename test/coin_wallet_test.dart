@@ -4,6 +4,21 @@ import 'package:flutter_dinosaur/dino_catalog.dart';
 import 'player_progress_test.dart' show MemoryBackend;
 
 void main() {
+  test(
+    'pickups credit the wallet at the correct difficulty rate once per bank',
+    () {
+      final progress = PlayerProgress();
+      progress.creditRunPickups(3, 1);
+      expect(progress.coins, 30);
+      progress.creditRunPickups(3, 2);
+      expect(progress.coins, 90);
+      progress.creditRunPickups(3, 3);
+      expect(progress.coins, 180);
+      progress.creditRunPickups(0, 3);
+      progress.creditRunPickups(3, 4);
+      expect(progress.coins, 180);
+    },
+  );
   test('v1 stars migrate once without losing scores or settings', () async {
     final backend = MemoryBackend()
       ..data = '{"version":1,"stars":12,"best_easy":70,"sound":false}';

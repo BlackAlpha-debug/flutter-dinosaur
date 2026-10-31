@@ -82,7 +82,7 @@ class _GameScreenState extends State<GameScreen>
   final _frameClock = FrameClock();
   double _lastHudUpdate = 0;
   late final PlayerProgress progress;
-  int _bankedStars = 0;
+  int _bankedPickups = 0;
   RunState _lastState = RunState.menu;
   Difficulty get _difficulty => progress.difficulty;
   bool get _effects => progress.effects;
@@ -117,10 +117,10 @@ class _GameScreenState extends State<GameScreen>
 
   void _gameChanged() {
     final stateChanged = game.state != _lastState;
-    final earned = game.runStars - _bankedStars;
+    final earned = game.runPickups - _bankedPickups;
     if (earned > 0) {
-      _bankedStars = game.runStars;
-      progress.addStars(earned);
+      _bankedPickups = game.runPickups;
+      progress.creditRunPickups(earned, game.difficulty.coinMultiplier);
       _sound('star');
     }
     if (game.state == RunState.paused || game.state == RunState.gameOver) {
@@ -176,7 +176,7 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _start() {
-    _bankedStars = 0;
+    _bankedPickups = 0;
     _lastHudUpdate = 0;
     game.start(_difficulty);
   }
@@ -198,11 +198,7 @@ class _GameScreenState extends State<GameScreen>
                 for (final option in Difficulty.values)
                   ListTile(
                     title: Text(option.label),
-                    subtitle: Text(
-                      option == Difficulty.easy
-                          ? 'A gentle start with more space'
-                          : 'A little faster, a little trickier',
-                    ),
+                    subtitle: Text('${option.coinMultiplier}× gold per pickup'),
                     leading: Icon(
                       _difficulty == option
                           ? Icons.radio_button_checked
@@ -361,7 +357,7 @@ class _GameScreenState extends State<GameScreen>
     );
     if (reset == true && mounted) {
       progress.reset();
-      _bankedStars = 0;
+      _bankedPickups = 0;
       game.home();
     }
   }
@@ -429,7 +425,7 @@ class _GameScreenState extends State<GameScreen>
             const _HowToJump(),
             const SizedBox(height: 12),
             Text(
-              'Best ${progress.best(_difficulty)} · Stars ${progress.stars}',
+              'Best ${progress.best(_difficulty)} · Gold ${progress.coins}',
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
             ),
             if (progress.storageError)
@@ -510,7 +506,10 @@ class _GameScreenState extends State<GameScreen>
         child: Row(
           children: [
             _counter('Score', game.score),
-            _counter('Stars', game.runStars),
+            _counter(
+              'Gold ×${game.difficulty.coinMultiplier}',
+              game.goldEarned,
+            ),
             const SizedBox(width: 12),
             IconButton.filledTonal(
               tooltip: 'Pause game',
@@ -585,7 +584,7 @@ class _GameScreenState extends State<GameScreen>
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                'Score ${game.score} · Stars ${game.runStars}',
+                                'Score ${game.score} · Gold +${game.goldEarned}',
                                 style: const TextStyle(fontSize: 20),
                               ),
                               const SizedBox(height: 20),

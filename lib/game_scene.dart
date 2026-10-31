@@ -99,11 +99,11 @@ class GameScene extends StatelessWidget {
                               filterQuality: FilterQuality.low,
                             ),
                           ),
-                        for (final star in game.stars)
+                        for (final star in game.coins)
                           Positioned.fromRect(
                             rect: star.rect(game.distance),
                             child: const Icon(
-                              Icons.star_rounded,
+                              Icons.monetization_on_rounded,
                               size: 28,
                               color: Color(0xFFFFC745),
                             ),

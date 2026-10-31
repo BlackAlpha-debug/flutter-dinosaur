@@ -19,7 +19,7 @@ void main() {
     expect(game.distance, 0);
     expect(game.dino.velY, 0);
     expect(game.dino.dispY, 0);
-    expect(game.runStars, 0);
+    expect(game.runPickups, 0);
     expect(game.jump(), isTrue);
     game.advance(0.02);
     expect(game.dino.dispY, greaterThan(0));
@@ -131,7 +131,7 @@ void main() {
       game.dino.velY = 0;
       game.advance(1 / 60);
       expect(game.obstacles.length, lessThan(5));
-      expect(game.stars.length, lessThan(5));
+      expect(game.coins.length, lessThan(12));
       if (game.obstacles.length > 1) {
         final a = game.obstacles[0].getRect(GameEngine.viewport, game.distance);
         final b = game.obstacles[1].getRect(GameEngine.viewport, game.distance);

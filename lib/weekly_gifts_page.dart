@@ -65,7 +65,7 @@ class WeeklyGiftsPage extends StatelessWidget {
                     onPressed: progress.giftAvailable
                         ? () {
                             final amount = progress.claimGift();
-                            if (amount > 0)
+                            if (amount > 0) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -73,6 +73,7 @@ class WeeklyGiftsPage extends StatelessWidget {
                                   ),
                                 ),
                               );
+                            }
                           }
                         : null,
                     child: Text(

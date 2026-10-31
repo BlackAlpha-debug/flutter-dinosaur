@@ -115,3 +115,13 @@ Do not put ads over the jump area or show them unexpectedly on launch/death.
 
 - Phase 0: choices confirmed, repository clean, plan written. Implementation follows
   in phase order with a commit and push after each verified phase.
+- Phase 0 pushed: `0a41cd0` — plan.
+- Phase 1 pushed: `b443d86` — wallet/catalog, v1 migration and purchase tests.
+- Phase 2 pushed: `05db7b5` — coin trails, Hard and ×1/×2/×3 rewards.
+- Phase 3 pushed: `bfece2d` — generated/inspected three transparent character assets.
+- Phase 4 pushed: `bc9d042` — shop, previews, collection and confirmed purchases.
+- Phase 5 pushed: `2decbea` — repeating gifts, local dates and visit counts.
+- Phase 6: all 43 tests and analyzer pass. Version 1.2.0+4 Android debug build,
+  native ELF/ZIP 16 KB checks and browser flows passed. Browser confirmed a
+  1,000-gold purchase, equipped collection, daily gift and persistence after
+  reload, using a documented test-wallet fixture. No external requests/errors.

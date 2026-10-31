@@ -3,6 +3,19 @@ import 'package:flutter_dinosaur/player_progress.dart';
 import 'player_progress_test.dart' show MemoryBackend;
 
 void main() {
+  test('opening on consecutive days counts visits even without claiming', () {
+    var now = DateTime(2026, 11, 1);
+    final progress = PlayerProgress(clock: () => now);
+    progress.recordVisit();
+    progress.claimGift();
+    now = now.add(const Duration(days: 1));
+    progress.recordVisit();
+    now = now.add(const Duration(days: 1));
+    progress.recordVisit();
+    expect(progress.visitStreak, 3);
+    expect(progress.claimGift(), 150);
+    expect(progress.visitStreak, 3);
+  });
   test('one claim per date, repeat after seven days, and persist', () async {
     var now = DateTime(2026, 11, 1, 12);
     final backend = MemoryBackend();

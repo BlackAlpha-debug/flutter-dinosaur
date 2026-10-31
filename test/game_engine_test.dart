@@ -5,6 +5,21 @@ import 'package:flutter_dinosaur/dino.dart';
 import 'package:flutter_dinosaur/game_engine.dart';
 
 void main() {
+  test('Hard caps speed and keeps coin/obstacle queues bounded', () {
+    final hard = GameEngine(random: Random(4))..start(Difficulty.hard);
+    for (var i = 0; i < 6000; i++) {
+      hard.dino.dispY = 350;
+      hard.dino.velY = 0;
+      hard.advance(1 / 60);
+      expect(hard.coins.length, lessThan(12));
+      expect(hard.obstacles.length, lessThan(5));
+    }
+    expect(hard.speed, Difficulty.hard.maxSpeed);
+    expect(hard.state, RunState.playing);
+    hard.runPickups = 3;
+    expect(hard.goldEarned, 90);
+    hard.dispose();
+  });
   late GameEngine game;
   setUp(() => game = GameEngine(random: Random(7)));
   tearDown(() => game.dispose());

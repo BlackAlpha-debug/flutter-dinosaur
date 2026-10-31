@@ -1,18 +1,23 @@
 # Little Dino
 
 A gentle Flutter dinosaur runner for children aged 6–8, published by
-**BlackAlpha-debug**. Offline gameplay, no advertising, no purchases, no accounts
+**BlackAlpha-debug**. Offline gameplay, no advertising, no real-money purchases, no accounts
 and no analytics. This repository is being prepared for Google Play; store
 publication still requires the owner's release details and device/user testing.
 
 ## Play
 
 Tap **Play**, then tap anywhere in the play area to jump. Tap again in the air
-for a double jump. Avoid cacti and flying dinosaurs, collect stars and unlock
-colors. Easy and Normal have separate saved best scores. Pause at any time;
+for a double jump. Avoid cacti and flying dinosaurs, collect gold and unlock
+new dinosaurs. Easy, Normal and Hard give ×1, ×2 and ×3 gold respectively and
+have separate saved best scores. Pause at any time;
 backgrounding the app pauses the run and requires an explicit resume.
 
-Settings include difficulty, sound effects and extra effects. **For grown-ups**
+Visit **Dino Shop** for free previews and coin purchases, **My Dinosaurs** to
+choose an owned character, and **Weekly Gifts** for a repeating seven-gift cycle.
+Sprout is free; Bramble costs 1,000, Sunny 10,000 and Nova 25,000 earned gold.
+There are no real-money coin purchases or cash value. Missed days do not remove
+gift progress. Settings include difficulty, sound effects and extra effects. **For grown-ups**
 contains offline/privacy information, third-party licenses and confirmed local
 progress reset. Progress and preferences stay on the device.
 
@@ -21,6 +26,10 @@ progress reset. Progress and preferences stay on the device.
 | Home | Gameplay | Pause |
 | --- | --- | --- |
 | ![Home](screenshots/menu.png) | ![Gameplay](screenshots/gameplay.png) | ![Pause](screenshots/paused.png) |
+
+| Dino shop | Character preview | Weekly gifts |
+| --- | --- | --- |
+| ![Shop](screenshots/shop.png) | ![Bramble](screenshots/dino-preview.png) | ![Gifts](screenshots/weekly-gifts.png) |
 
 ## Development setup
 
@@ -58,6 +67,8 @@ emulator is required. Connect a physical phone for Android gameplay verification
 - [Android signing and Play Console checklist](docs/RELEASE.md)
 - [Complete privacy policy — ready to publish on Notion](docs/PRIVACY_POLICY.md)
 - [Android compatibility and optimization](docs/ANDROID_COMPATIBILITY.md)
+- [Coin/shop/weekly-gift implementation phases](docs/COINS_CHARACTERS_PLAN.md)
+- [Future ads integration — currently disabled](docs/ADVERTISING.md)
 - [Asset provenance and rights checks](docs/ASSETS.md)
 - [Validation results and remaining manual checks](docs/VALIDATION.md)
 

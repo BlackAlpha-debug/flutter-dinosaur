@@ -1,5 +1,31 @@
 # Validation record
 
+## November 1, 2026 — gold, characters and weekly gifts
+
+- Version 1.2.0+4 adds three difficulty multipliers, a local gold wallet,
+  one-time legacy-star migration, three generated characters, separate shop,
+  preview and collection pages, and repeating weekly gifts without accounts.
+- All 43 tests pass and analyzer is clean. Tests cover migration/reload, exact
+  price boundaries for all three purchases, buy/cancel/idempotent ownership,
+  selection, multiplier credit, Hard simulation/recycling, seven-day wrap,
+  duplicate/missed/backward dates, visits without gift claims, reset and
+  responsive new pages at 200% text.
+- Generated assets were inspected: 1254×1254 RGBA with transparent backgrounds.
+  Prompts/provenance are in DINO_ART.md. Character abilities remain identical.
+- Ads remain disabled; only a provider boundary and future-integration checklist
+  were added. No ad SDK or provider account was configured.
+- Version 1.2.0+4 debug build and final incremental build passed; native ELF
+  and ZIP 16 KB checks passed for all seven 64-bit libraries and three ABIs.
+- Browser pass: 11 base checks plus six economy checks, zero external requests,
+  JavaScript errors or failed HTTP responses. Confirmed a 1,000-gold purchase,
+  equipped ownership, collection, 100-gold daily gift and persisted selection/
+  balance after reload. Test wallet started at 1,200 and ended at 300 gold.
+  This is a clearly marked local-storage fixture, not a production coin-grant UI.
+  All three preview screenshots, shop and gift page were visually inspected.
+- Physical play-testing, low-end performance, final signed AAB/16 KB device
+  testing, store declarations and publisher release identity/key remain owner
+  prerequisites. Offline clock changes cannot be made tamper-proof locally.
+
 ## November 1, 2026 — privacy and Android optimization
 
 - Completed the publication-ready policy with the confirmed support/privacy

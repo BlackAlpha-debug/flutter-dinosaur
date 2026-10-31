@@ -14,5 +14,15 @@
     "stored best-score persistence after page reload",
     "small screen"
   ],
-  "savedBestScore": 85
+  "savedBestScore": 86,
+  "shopFixtureStartingGold": 1200,
+  "economyChecks": [
+    "preview",
+    "confirmed 1000-coin purchase",
+    "equipped ownership",
+    "collection",
+    "100-coin daily claim",
+    "purchase/gift/selection reload"
+  ],
+  "finalGold": 300
 }

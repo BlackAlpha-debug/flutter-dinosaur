@@ -98,6 +98,7 @@ class _GameScreenState extends State<GameScreen>
     WidgetsBinding.instance.addObserver(this);
     _ticker = createTicker(_tick);
     game.addListener(_gameChanged);
+    progress.recordVisit();
   }
 
   void _tick(Duration elapsed) {
@@ -156,6 +157,9 @@ class _GameScreenState extends State<GameScreen>
     if (state != AppLifecycleState.resumed) {
       game.pause();
       unawaited(widget.audio?.stop());
+    } else {
+      progress.recordVisit();
+      progress.refreshCalendar();
     }
   }
 
@@ -231,7 +235,7 @@ class _GameScreenState extends State<GameScreen>
                 ),
                 const Divider(),
                 const Text(
-                  'Your dinosaur colors',
+                  'Sprout color collection',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 for (var i = 0; i < 3; i++)
@@ -242,7 +246,7 @@ class _GameScreenState extends State<GameScreen>
                     subtitle: Text(
                       progress.unlocked(i)
                           ? 'Ready to wear'
-                          : 'Collect ${PlayerProgress.colorCosts[i]} stars to unlock',
+                          : 'Collect ${PlayerProgress.colorCosts[i]} coin pickups to unlock',
                     ),
                     leading: Icon(
                       progress.color == i
@@ -343,7 +347,7 @@ class _GameScreenState extends State<GameScreen>
         scrollable: true,
         title: const Text('Erase local progress?'),
         content: const Text(
-          'This resets all scores, stars, colors and settings on this device.',
+          'This resets coins, owned dinosaurs, scores, weekly gifts, colors and settings on this device.',
         ),
         actions: [
           TextButton(
@@ -458,6 +462,10 @@ class _GameScreenState extends State<GameScreen>
                 icon: const Icon(Icons.play_arrow_rounded),
                 label: Text('Play · ${_difficulty.label}'),
               ),
+            ),
+            Text(
+              '${_difficulty.coinMultiplier}× gold on this difficulty',
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             TextButton.icon(
@@ -631,6 +639,10 @@ class _GameScreenState extends State<GameScreen>
                               Text(
                                 'Score ${game.score} · Gold +${game.goldEarned}',
                                 style: const TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                '${game.runPickups} pickups × 10 × ${game.difficulty.coinMultiplier} = ${game.goldEarned} gold',
+                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 20),
                               Text(

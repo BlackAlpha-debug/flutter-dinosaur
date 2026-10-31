@@ -40,7 +40,7 @@ for 14 days for device testing. This is not a Play release bundle.
 5. Set an unused increasing versionCode using `pubspec.yaml` or build flags.
 6. Run `powershell -File tools/build_release.ps1`. It validates identity and key
    file configuration before invoking Flutter, then embeds the public contact
-   details. The current pubspec version is 1.1.1+3; increase it for later uploads.
+   details. The current pubspec version is 1.2.0+4; increase it for later uploads.
    The artifact is under `build/app/outputs/bundle/release/`.
 7. Inspect the bundle's package name, target SDK, merged permissions and native
    alignment. Verify 64-bit and 16 KB support with Android tooling and a suitable
@@ -78,11 +78,13 @@ for 14 days for device testing. This is not a Play release bundle.
 
 Title: Little Dino
 
-Short description: Hop, collect stars and explore a gentle offline dinosaur adventure.
+Short description: Hop, collect gold and meet cheerful dinosaurs in an offline adventure.
 
 Full description: Join a cheerful little dinosaur for a hopping adventure! Tap
 to jump and tap again for a double jump. Dodge cacti, meet flying dinosaurs and
-collect stars to unlock new colors. Choose Easy for a gentle start or Normal for
-a little more challenge. Pause whenever you need a break. Best scores and colors
-stay on your device. Designed for ages 6–8, with no ads, no purchases and no account
-needed. Includes optional sound effects and an effects setting.
+collect gold to buy new dinosaur friends. Preview Bramble, Sunny and Nova in the
+shop, then choose your owned dinosaur in My Dinosaurs. Easy, Normal and Hard give
+×1, ×2 and ×3 gold. Claim seven repeating weekly gifts without losing reward
+progress when you miss a day. Pause whenever you need a break. Progress stays on
+your device. Designed for ages 6–8, with no ads, no real-money purchases and no
+account needed. Includes optional sound effects and an effects setting.

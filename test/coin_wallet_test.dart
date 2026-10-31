@@ -5,6 +5,19 @@ import 'player_progress_test.dart' show MemoryBackend;
 
 void main() {
   test(
+    'all three prices are charged correctly at exact balance boundaries',
+    () {
+      final progress = PlayerProgress()..addCoins(35999);
+      expect(progress.purchase('bramble'), PurchaseResult.purchased);
+      expect(progress.purchase('sunny'), PurchaseResult.purchased);
+      expect(progress.coins, 24999);
+      expect(progress.purchase('nova'), PurchaseResult.insufficientCoins);
+      progress.addCoins(1);
+      expect(progress.purchase('nova'), PurchaseResult.purchased);
+      expect(progress.coins, 0);
+    },
+  );
+  test(
     'pickups credit the wallet at the correct difficulty rate once per bank',
     () {
       final progress = PlayerProgress();

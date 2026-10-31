@@ -14,6 +14,22 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
   try {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
     page = await context.newPage();
+    async function tapScrolling(name) {
+      await page.mouse.move(195, 440);
+      await page.mouse.wheel(0, -6000);
+      await page.waitForTimeout(120);
+      for (let attempt = 0; attempt < 16; attempt++) {
+        const button = page.getByRole('button', { name, exact: typeof name === 'string' });
+        if (await button.isVisible()) { await button.click(); return; }
+        await page.mouse.wheel(0, 240);
+        await page.waitForTimeout(100);
+      }
+      throw new Error('Could not scroll to button: ' + name);
+    }
+    async function enableSemantics() {
+      const node = page.locator('flt-semantics-placeholder');
+      if (await node.count()) await node.evaluate(element => element.click());
+    }
     const errors = [];
     const external = new Set();
     let stage = 'startup';
@@ -58,7 +74,7 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.screenshot({ path: path.join(output, 'results.png') });
     await page.getByRole('button', { name: 'Back home', exact: true }).click();
     stage = 'privacy';
-    await page.getByRole('button', { name: 'For grown-ups', exact: true }).click();
+    await tapScrolling('For grown-ups');
     await page.mouse.move(195, 450);
     await page.mouse.wheel(0, 1800);
     const policyResponse = page.waitForResponse(response =>
@@ -83,6 +99,56 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     let saved = JSON.parse(savedProgress || 'null');
     if (typeof saved === 'string') saved = JSON.parse(saved);
     if (!saved || saved.best_easy <= 0) throw new Error('Best score did not persist after reload');
+    // Test fixture only: seed local storage to exercise a purchase without hours
+    // of automated play. No debug coin grant exists in the production UI.
+    await page.evaluate(() => {
+      const key = Object.keys(localStorage).find(key => key.includes('little_dino.progress.v1'));
+      let data = JSON.parse(localStorage.getItem(key));
+      const wrapped = typeof data === 'string';
+      if (wrapped) data = JSON.parse(data);
+      data.coins = 1200;
+      localStorage.setItem(key, JSON.stringify(wrapped ? JSON.stringify(data) : data));
+    });
+    await page.reload({ waitUntil: 'networkidle' }); await enableSemantics();
+    stage = 'shop';
+    await tapScrolling('Dino Shop');
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(output, 'shop.png') });
+    await tapScrolling('Preview Bramble');
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(output, 'dino-preview.png') });
+    await tapScrolling('Buy for 1,000 gold');
+    await page.getByRole('button', { name: 'Buy and use', exact: true }).click();
+    await page.getByRole('button', { name: 'Equipped', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    for (const name of ['Sunny', 'Nova']) {
+      await tapScrolling('Preview ' + name);
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(output, name.toLowerCase() + '-preview.png') });
+      await page.getByRole('button', { name: 'Back', exact: true }).click();
+    }
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    stage = 'gifts';
+    await tapScrolling(/Weekly Gifts/);
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(output, 'weekly-gifts.png') });
+    await tapScrolling('Claim 100 gold');
+    await page.getByRole('button', { name: 'Gift claimed for today', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await tapScrolling('My Dinosaurs');
+    await tapScrolling('Preview Bramble');
+    await page.getByRole('button', { name: 'Equipped', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await page.reload({ waitUntil: 'networkidle' }); await enableSemantics();
+    let finalProgress = await page.evaluate(() => Object.entries(localStorage)
+      .find(([key]) => key.includes('little_dino.progress.v1'))[1]);
+    finalProgress = JSON.parse(finalProgress);
+    if (typeof finalProgress === 'string') finalProgress = JSON.parse(finalProgress);
+    if (finalProgress.coins !== 300 || finalProgress.selectedDino !== 'bramble' ||
+        !finalProgress.owned.includes('bramble') || finalProgress.nextGift !== 1) {
+      throw new Error('Purchase, selection or gift did not persist correctly');
+    }
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'reloaded.png') });
     await page.setViewportSize({ width: 320, height: 568 });
@@ -91,7 +157,9 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
       'menu', 'start', 'gameplay', 'pause', 'settings', 'resume', 'collision/results',
       'home', 'complete bundled privacy policy/contact',
       'stored best-score persistence after page reload', 'small screen' ],
-      savedBestScore: saved.best_easy };
+      savedBestScore: saved.best_easy, shopFixtureStartingGold: 1200,
+      economyChecks: ['preview', 'confirmed 1000-coin purchase', 'equipped ownership',
+        'collection', '100-coin daily claim', 'purchase/gift/selection reload'], finalGold: finalProgress.coins };
     await fs.writeFile(path.join(output, 'browser-results.json'), JSON.stringify(result, null, 2));
     console.log(JSON.stringify(result, null, 2));
     if (errors.length || external.size) process.exitCode = 1;

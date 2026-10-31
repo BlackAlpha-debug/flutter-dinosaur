@@ -18,8 +18,9 @@ address, phone number, date of birth, photograph, or other personal information.
 The game saves the following information locally on the player's device:
 
 - Best scores for each difficulty level.
-- Collected stars and unlocked dinosaur colors.
-- The selected dinosaur color and difficulty level.
+- Earned gold coins, lifetime pickup count, dinosaur ownership and unlocked colors.
+- The selected dinosaur, color and difficulty level.
+- The most recent gift-claim and visit dates, next weekly gift and consecutive visit count.
 - Sound and visual-effects settings.
 
 This information is used to remember progress and preferences. The game does
@@ -28,10 +29,15 @@ local progress or restore it remotely.
 
 ## 2. Advertising, tracking, and permissions
 
-Little Dino contains no advertising, in-app purchases, accounts, chat, online
+Little Dino contains no advertising, real-money purchases, accounts, chat, online
 leaderboards, social sharing, push notifications, or analytics SDKs. We do not
 use the game to track players across apps or websites or to create advertising
 profiles. We do not sell or rent personal information.
+
+The dinosaur shop uses earned virtual gold only. Coins cannot be bought with
+real money or exchanged for cash. Weekly gifts use the device's local calendar
+to limit claims to one per day. These dates and rewards stay on the device;
+there is no account login or server-side visit tracking.
 
 The game does not access the device's camera, microphone, contacts, location,
 or advertising identifier. Game images, fonts, and sound effects are bundled

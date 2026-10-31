@@ -32,6 +32,13 @@ class DinoShopPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (progress.storageError)
+                    TextButton(
+                      onPressed: progress.retrySave,
+                      child: const Text(
+                        'Saving unavailable. Tap to retry before buying.',
+                      ),
+                    ),
                   Text(
                     'Your gold: ${formatGold(progress.coins)}',
                     style: const TextStyle(
@@ -235,8 +242,9 @@ class _DinoPreviewPageState extends State<DinoPreviewPage>
                     TextButton(
                       onPressed: () {
                         if (!MediaQuery.disableAnimationsOf(context) &&
-                            progress.effects)
+                            progress.effects) {
                           _hop.forward(from: 0);
+                        }
                       },
                       child: const Text('Try a hop'),
                     ),
@@ -250,6 +258,11 @@ class _DinoPreviewPageState extends State<DinoPreviewPage>
                       ),
                     ),
                     const SizedBox(height: 16),
+                    if (progress.storageError)
+                      TextButton(
+                        onPressed: progress.retrySave,
+                        child: const Text('Saving unavailable. Tap to retry.'),
+                      ),
                     if (owned)
                       FilledButton(
                         onPressed: equipped
@@ -259,7 +272,11 @@ class _DinoPreviewPageState extends State<DinoPreviewPage>
                       )
                     else ...[
                       FilledButton(
-                        onPressed: progress.coins >= dino.price ? _buy : null,
+                        onPressed:
+                            !progress.storageError &&
+                                progress.coins >= dino.price
+                            ? _buy
+                            : null,
                         child: Text('Buy for ${formatGold(dino.price)} gold'),
                       ),
                       if (progress.coins < dino.price)

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'game_engine.dart';
+import 'dino_catalog.dart';
 
 abstract class ProgressBackend {
   Future<String?> read();
@@ -25,6 +26,12 @@ class PlayerProgress extends ChangeNotifier {
   final Map<String, int> _best = {};
   Difficulty difficulty = Difficulty.easy;
   int stars = 0;
+  int _coins = 0;
+  final Set<String> _owned = {'sprout'};
+  String _selectedDino = 'sprout';
+  int get coins => _coins;
+  String get selectedDino => _selectedDino;
+  bool owns(String id) => _owned.contains(id);
   int color = 0;
   bool effects = true;
   bool sound = true;
@@ -43,7 +50,7 @@ class PlayerProgress extends ChangeNotifier {
       final raw = await backend!.read();
       if (raw == null) return;
       final data = jsonDecode(raw) as Map<String, dynamic>;
-      if (data['version'] != 1) {
+      if (data['version'] != 1 && data['version'] != 2) {
         throw const FormatException('Unknown progress version');
       }
       difficulty = Difficulty.values.firstWhere(
@@ -61,6 +68,18 @@ class PlayerProgress extends ChangeNotifier {
       }
       final savedColor = (data['color'] as num?)?.toInt() ?? 0;
       color = unlocked(savedColor) ? savedColor : 0;
+      _coins = max(0, (data['coins'] as num?)?.toInt() ?? stars * 10);
+      _owned.addAll(
+        (data['owned'] as List<dynamic>? ?? []).whereType<String>().where(
+          (id) => dinoCatalog.any((dino) => dino.id == id),
+        ),
+      );
+      final selected = data['selectedDino'] as String? ?? 'sprout';
+      _selectedDino = owns(selected) ? selected : 'sprout';
+      if (data['version'] == 1) {
+        _save();
+        await flush();
+      }
     } catch (error) {
       storageError = true;
       debugPrint('Could not load local game progress: $error');
@@ -92,8 +111,42 @@ class PlayerProgress extends ChangeNotifier {
   void addStars(int value) {
     if (value > 0) {
       stars += value;
+      _coins += value * 10;
       _save();
     }
+  }
+
+  void addCoins(int amount) {
+    if (amount <= 0) return;
+    _coins += amount;
+    _save();
+  }
+
+  void creditRunPickups(int pickups, int multiplier) {
+    if (pickups <= 0 || multiplier < 1 || multiplier > 3) return;
+    stars += pickups;
+    _coins += pickups * 10 * multiplier;
+    _save();
+  }
+
+  PurchaseResult purchase(String id) {
+    final matches = dinoCatalog.where((dino) => dino.id == id);
+    if (matches.isEmpty) return PurchaseResult.unknownCharacter;
+    if (owns(id)) return PurchaseResult.alreadyOwned;
+    final dino = matches.single;
+    if (_coins < dino.price) return PurchaseResult.insufficientCoins;
+    _coins -= dino.price;
+    _owned.add(id);
+    _selectedDino = id;
+    _save();
+    return PurchaseResult.purchased;
+  }
+
+  bool selectDino(String id) {
+    if (!owns(id)) return false;
+    _selectedDino = id;
+    _save();
+    return true;
   }
 
   void record(Difficulty mode, int score) {
@@ -106,6 +159,11 @@ class PlayerProgress extends ChangeNotifier {
   void reset() {
     _best.clear();
     stars = 0;
+    _coins = 0;
+    _owned
+      ..clear()
+      ..add('sprout');
+    _selectedDino = 'sprout';
     color = 0;
     difficulty = Difficulty.easy;
     effects = true;
@@ -118,7 +176,10 @@ class PlayerProgress extends ChangeNotifier {
 
   void _save() {
     final snapshot = jsonEncode({
-      'version': 1,
+      'version': 2,
+      'coins': _coins,
+      'owned': _owned.toList(),
+      'selectedDino': _selectedDino,
       'difficulty': difficulty.name,
       'stars': stars,
       'color': color,

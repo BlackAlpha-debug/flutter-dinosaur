@@ -1,528 +1,620 @@
-import 'dart:math';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'cactus.dart';
-import 'cloud.dart';
-import 'dino.dart';
-import 'game_object.dart';
-import 'ground.dart';
-import 'constants.dart';
-import 'ptera.dart';
-import 'rain.dart';
+import 'game_engine.dart';
+import 'game_scene.dart';
+import 'game_audio.dart';
+import 'player_progress.dart';
+import 'app_info.dart';
+import 'dino_avatar.dart';
 
-void main() {
-  runApp(const MyApp());
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  final progress = PlayerProgress(backend: DeviceProgressBackend());
+  await progress.load();
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Little Dino — original project',
+    ], await rootBundle.loadString('LICENSE'));
+    yield LicenseEntryWithLineBreaks([
+      'Roboto',
+    ], await rootBundle.loadString('assets/fonts/roboto_license.txt'));
+    yield LicenseEntryWithLineBreaks([
+      'Noto Sans Symbols',
+    ], await rootBundle.loadString('assets/fonts/OFL_NotoSansSymbols.txt'));
+  });
+  runApp(MyApp(progress: progress, audio: LocalGameAudio()));
 }
+
+const ink = Color(0xFF173C35);
+const leaf = Color(0xFF276B4D);
+const cream = Color(0xFFFFF9EC);
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  const MyApp({super.key, this.progress, this.audio});
+  final PlayerProgress? progress;
+  final GameAudio? audio;
   @override
-  Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
-    return const MaterialApp(
-      title: 'Flutter Dino',
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+    title: 'Little Dino',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      useMaterial3: true,
+      fontFamily: 'Roboto',
+      scaffoldBackgroundColor: cream,
+      colorScheme: ColorScheme.fromSeed(seedColor: leaf),
+      textTheme: ThemeData().textTheme.apply(
+        bodyColor: ink,
+        displayColor: ink,
+        fontFamily: 'Roboto',
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: leaf,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(64, 56),
+          textStyle: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+        ),
+      ),
+    ),
+    home: GameScreen(progress: progress, audio: audio),
+  );
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class GameScreen extends StatefulWidget {
+  const GameScreen({super.key, this.engine, this.progress, this.audio});
+  final GameEngine? engine;
+  final PlayerProgress? progress;
+  final GameAudio? audio;
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<GameScreen> createState() => _GameScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with TickerProviderStateMixin {
-  Dino dino = Dino();
-  double runVelocity = initialVelocity;
-  double runDistance = 0;
-  int highScore = 0;
-  TextEditingController gravityController =
-      TextEditingController(text: gravity.toString());
-  TextEditingController accelerationController =
-      TextEditingController(text: acceleration.toString());
-  TextEditingController jumpVelocityController =
-      TextEditingController(text: jumpVelocity.toString());
-  TextEditingController runVelocityController =
-      TextEditingController(text: initialVelocity.toString());
-  TextEditingController dayNightOffestController =
-      TextEditingController(text: dayNightOffest.toString());
-
-  late AnimationController worldController;
-  late AnimationController _deathFlashController;
-  late Animation<double> _deathFlashAnimation;
-  Duration lastUpdateCall = const Duration();
-
-  int _currentSkyPhase = 0;
-
-  List<Cactus> cacti = [Cactus(worldLocation: const Offset(200, 0))];
-
-  List<Ground> ground = [
-    Ground(worldLocation: const Offset(0, 0)),
-    Ground(worldLocation: Offset(groundSprite.imageWidth / 10, 0))
-  ];
-
-  List<Ptera> pteras = [];
-
-  List<Cloud> clouds = [
-    Cloud(worldLocation: const Offset(100, 20)),
-    Cloud(worldLocation: const Offset(200, 10)),
-    Cloud(worldLocation: const Offset(350, -10)),
-  ];
+class _GameScreenState extends State<GameScreen>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  late final GameEngine game;
+  late final Ticker _ticker;
+  Duration? _previous;
+  late final PlayerProgress progress;
+  int _bankedStars = 0;
+  RunState _lastState = RunState.menu;
+  Difficulty get _difficulty => progress.difficulty;
+  bool get _effects => progress.effects;
 
   @override
   void initState() {
     super.initState();
-    worldController =
-        AnimationController(vsync: this, duration: const Duration(days: 99));
-    worldController.addListener(_update);
-
-    _deathFlashController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _deathFlashAnimation = Tween<double>(begin: 0.0, end: 0.4).animate(
-      CurvedAnimation(parent: _deathFlashController, curve: Curves.easeOut),
-    );
-
-    _die();
+    game = widget.engine ?? GameEngine();
+    progress = widget.progress ?? PlayerProgress();
+    progress.addListener(_progressChanged);
+    WidgetsBinding.instance.addObserver(this);
+    _ticker = createTicker(_tick);
+    game.addListener(_gameChanged);
   }
 
-  List<Color> _getSkyColors() {
-    int phase = (runDistance ~/ skyPhaseInterval)
-        .clamp(0, skyGradients.length - 1);
-    if (phase != _currentSkyPhase) {
-      _currentSkyPhase = phase;
+  void _tick(Duration elapsed) {
+    final previous = _previous;
+    _previous = elapsed;
+    if (previous != null) {
+      game.advance((elapsed - previous).inMicroseconds / 1000000);
     }
-    return skyGradients[_currentSkyPhase];
   }
 
-  Color _getTextColor() {
-    return _currentSkyPhase >= 3 ? Colors.white : Colors.black;
+  void _progressChanged() {
+    if (mounted) setState(() {});
   }
 
-  void _die() {
-    setState(() {
-      worldController.stop();
-      dino.die();
-    });
-    _deathFlashController.forward(from: 0.0).then((_) {
-      _deathFlashController.reverse();
-    });
+  void _sound(String name) {
+    if (progress.sound) unawaited(widget.audio?.play(name));
   }
 
-  void _newGame() {
-    setState(() {
-      highScore = max(highScore, runDistance.toInt());
-      runDistance = 0;
-      runVelocity = initialVelocity;
-      _currentSkyPhase = 0;
-      updateGroundType(0);
-      dino.state = DinoState.idle;
-      dino.dispY = 0;
-      worldController.reset();
-      cacti = [
-        Cactus(worldLocation: const Offset(300, 0)),
-        Cactus(worldLocation: const Offset(550, 0)),
-      ];
-
-      ground = [
-        Ground(worldLocation: const Offset(0, 0)),
-        Ground(worldLocation: Offset(groundSprite.imageWidth / 10, 0))
-      ];
-
-      clouds = [
-        Cloud(worldLocation: const Offset(100, 20)),
-        Cloud(worldLocation: const Offset(200, 10)),
-        Cloud(worldLocation: const Offset(350, -15)),
-        Cloud(worldLocation: const Offset(500, 10)),
-        Cloud(worldLocation: const Offset(550, -10)),
-      ];
-
-      pteras = [];
-
-    });
+  void _jump() {
+    if (game.jump()) _sound('jump');
   }
 
-  _update() {
-    try {
-      double elapsedTimeSeconds;
-      dino.update(lastUpdateCall, worldController.lastElapsedDuration);
-      try {
-        elapsedTimeSeconds =
-            (worldController.lastElapsedDuration! - lastUpdateCall)
-                    .inMilliseconds /
-                1000;
-      } catch (_) {
-        elapsedTimeSeconds = 0;
+  void _gameChanged() {
+    final earned = game.runStars - _bankedStars;
+    if (earned > 0) {
+      _bankedStars = game.runStars;
+      progress.addStars(earned);
+      _sound('star');
+    }
+    if (game.state == RunState.paused || game.state == RunState.gameOver) {
+      progress.record(game.difficulty, game.score);
+    }
+    if (game.state != _lastState) {
+      if (game.state == RunState.paused || game.state == RunState.menu) {
+        unawaited(widget.audio?.stop());
       }
+      if (game.state == RunState.gameOver) _sound('finish');
+      _lastState = game.state;
+    }
+    if (game.state == RunState.playing && !_ticker.isActive) {
+      _previous = null;
+      _ticker.start();
+    } else if (game.state != RunState.playing && _ticker.isActive) {
+      _ticker.stop();
+      _previous = null;
+    }
+    if (mounted) setState(() {});
+  }
 
-      runDistance += runVelocity * elapsedTimeSeconds;
-      if (runDistance < 0) runDistance = 0;
-      runVelocity += acceleration * elapsedTimeSeconds;
-      updateGroundType(runDistance);
-
-      Size screenSize = MediaQuery.of(context).size;
-
-      Rect dinoRect = dino.getRect(screenSize, runDistance);
-      for (Cactus cactus in cacti) {
-        Rect obstacleRect = cactus.getRect(screenSize, runDistance);
-        if (dinoRect.overlaps(obstacleRect.deflate(20))) {
-          _die();
-        }
-
-        if (obstacleRect.right < 0) {
-          setState(() {
-            cacti.remove(cactus);
-            double extraGap = runDistance < 800
-                ? 150 + (800 - runDistance) * 0.3
-                : 0;
-            cacti.add(Cactus(
-                worldLocation: Offset(
-                    runDistance +
-                        Random().nextInt(100) +
-                        extraGap +
-                        MediaQuery.of(context).size.width / worlToPixelRatio,
-                    0)));
-          });
-        }
-      }
-
-      for (Ptera ptera in pteras) {
-        ptera.update(lastUpdateCall, worldController.lastElapsedDuration!);
-        Rect pteraRect = ptera.getRect(screenSize, runDistance);
-        if (dinoRect.overlaps(pteraRect.deflate(20))) {
-          _die();
-        }
-        if (pteraRect.right < 0) {
-          setState(() {
-            pteras.remove(ptera);
-            pteras.add(Ptera(
-              worldLocation: Offset(
-                runDistance +
-                    Random().nextInt(200) +
-                    100 +
-                    MediaQuery.of(context).size.width / worlToPixelRatio,
-                Random().nextInt(80).toDouble(),
-              ),
-            ));
-          });
-        }
-      }
-
-      if (runDistance >= 700 && pteras.isEmpty) {
-        setState(() {
-          pteras.add(Ptera(
-            worldLocation: Offset(
-              runDistance + MediaQuery.of(context).size.width / worlToPixelRatio + 50,
-              Random().nextInt(80).toDouble(),
-            ),
-          ));
-        });
-      }
-
-      for (Ground groundlet in ground) {
-        if (groundlet.getRect(screenSize, runDistance).right < 0) {
-          setState(() {
-            ground.remove(groundlet);
-            ground.add(
-              Ground(
-                worldLocation: Offset(
-                  ground.last.worldLocation.dx + groundSprite.imageWidth / 10,
-                  0,
-                ),
-              ),
-            );
-          });
-        }
-      }
-
-      for (Cloud cloud in clouds) {
-        if (cloud.getRect(screenSize, runDistance).right < 0) {
-          setState(() {
-            clouds.remove(cloud);
-            clouds.add(
-              Cloud(
-                worldLocation: Offset(
-                  clouds.last.worldLocation.dx +
-                      Random().nextInt(200) +
-                      MediaQuery.of(context).size.width / worlToPixelRatio,
-                  Random().nextInt(50) - 25.0,
-                ),
-              ),
-            );
-          });
-        }
-      }
-
-      lastUpdateCall = worldController.lastElapsedDuration!;
-    } catch (e) {
-      //
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      game.pause();
+      unawaited(widget.audio?.stop());
     }
   }
 
   @override
   void dispose() {
-    gravityController.dispose();
-    accelerationController.dispose();
-    jumpVelocityController.dispose();
-    runVelocityController.dispose();
-    dayNightOffestController.dispose();
-    _deathFlashController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    game.removeListener(_gameChanged);
+    progress.removeListener(_progressChanged);
+    if (widget.progress == null) progress.dispose();
+    unawaited(widget.audio?.dispose());
+    _ticker.dispose();
+    if (widget.engine == null) game.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    List<Widget> children = [];
+  void _start() {
+    _bankedStars = 0;
+    game.start(_difficulty);
+  }
 
-    for (GameObject object in [...clouds, ...ground, ...cacti, ...pteras, dino]) {
-      children.add(
-        AnimatedBuilder(
-          animation: worldController,
-          builder: (context, _) {
-            Rect objectRect = object.getRect(screenSize, runDistance);
-            return Positioned(
-              left: objectRect.left,
-              top: objectRect.top,
-              width: objectRect.width,
-              height: objectRect.height,
-              child: object.render(),
-            );
-          },
-        ),
-      );
-    }
-
-    final skyColors = _getSkyColors();
-
-    return Scaffold(
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 2000),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: skyColors,
-          ),
-        ),
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            if (dino.state == DinoState.dead) {
-              _newGame();
-            } else if (dino.state == DinoState.idle) {
-              setState(() {
-                dino.state = DinoState.running;
-                worldController.forward();
-              });
-            } else {
-              dino.jump();
-            }
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned.fill(
-                child: RainEffect(
-                  gameController: worldController,
-                  skyPhase: _currentSkyPhase,
-                ),
-              ),
-              ...children,
-              AnimatedBuilder(
-                animation: worldController,
-                builder: (context, _) {
-                  return Positioned(
-                    left: screenSize.width / 2 - 30,
-                    top: 100,
-                    child: Text(
-                      'Score: ${runDistance.toInt()}',
-                      style: TextStyle(color: _getTextColor()),
+  Future<void> _settings() async {
+    game.pause();
+    await showDialog<void>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, updateDialog) => AlertDialog(
+          title: const Text('Make it your adventure'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Difficulty changes apply to your next run.'),
+                const SizedBox(height: 16),
+                for (final option in Difficulty.values)
+                  ListTile(
+                    title: Text(option.label),
+                    subtitle: Text(
+                      option == Difficulty.easy
+                          ? 'A gentle start with more space'
+                          : 'A little faster, a little trickier',
                     ),
-                  );
-                },
-              ),
-              AnimatedBuilder(
-                animation: worldController,
-                builder: (context, _) {
-                  return Positioned(
-                    left: screenSize.width / 2 - 50,
-                    top: 120,
-                    child: Text(
-                      'High Score: $highScore',
-                      style: TextStyle(color: _getTextColor()),
+                    leading: Icon(
+                      _difficulty == option
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
                     ),
-                  );
-                },
-              ),
-              // Game-over red flash overlay
-              AnimatedBuilder(
-                animation: _deathFlashAnimation,
-                builder: (context, _) {
-                  return IgnorePointer(
-                    child: Container(
-                      color: Colors.red.withValues(alpha: _deathFlashAnimation.value),
-                    ),
-                  );
-                },
-              ),
-              Positioned(
-                right: 20,
-                top: 20,
-                child: IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white70),
-                  onPressed: () {
-                    _die();
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            side: const BorderSide(color: Color(0xFF4CAF50), width: 3),
-                          ),
-                          backgroundColor: const Color(0xFFF1F8E9),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF4CAF50),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: const Text(
-                                    "Dino Settings",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                _buildSettingRow("Gravity", gravityController),
-                                _buildSettingRow("Acceleration", accelerationController),
-                                _buildSettingRow("Run Speed", runVelocityController),
-                                _buildSettingRow("Jump Power", jumpVelocityController),
-                                _buildSettingRow("Day-Night Cycle", dayNightOffestController),
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF4CAF50),
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                      elevation: 4,
-                                    ),
-                                    onPressed: () {
-                                      gravity = int.parse(gravityController.text);
-                                      acceleration =
-                                          double.parse(accelerationController.text);
-                                      initialVelocity =
-                                          double.parse(runVelocityController.text);
-                                      jumpVelocity =
-                                          double.parse(jumpVelocityController.text);
-                                      dayNightOffest =
-                                          int.parse(dayNightOffestController.text);
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text(
-                                      "Let's Go!",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                bottom: 10,
-                child: TextButton(
-                  onPressed: () {
-                    _die();
-                  },
-                  child: const Text(
-                    "Force Kill Dino",
-                    style: TextStyle(color: Colors.red),
+                    onTap: () {
+                      progress.setDifficulty(option);
+                      updateDialog(() {});
+                    },
                   ),
+                SwitchListTile(
+                  title: const Text('Extra effects'),
+                  subtitle: const Text('Rain and playful movement'),
+                  value: _effects,
+                  onChanged: (value) {
+                    progress.setEffects(value);
+                    updateDialog(() {});
+                  },
                 ),
-              ),
-            ],
+                SwitchListTile(
+                  title: const Text('Sound effects'),
+                  value: progress.sound,
+                  onChanged: (value) {
+                    progress.setSound(value);
+                    if (!value) unawaited(widget.audio?.stop());
+                    updateDialog(() {});
+                  },
+                ),
+                const Divider(),
+                const Text(
+                  'Your dinosaur colors',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                for (var i = 0; i < 3; i++)
+                  ListTile(
+                    title: Text(
+                      ['Fern green', 'Sunshine gold', 'Berry purple'][i],
+                    ),
+                    subtitle: Text(
+                      progress.unlocked(i)
+                          ? 'Ready to wear'
+                          : 'Collect ${PlayerProgress.colorCosts[i]} stars to unlock',
+                    ),
+                    leading: Icon(
+                      progress.color == i
+                          ? Icons.check_circle
+                          : Icons.circle_outlined,
+                    ),
+                    enabled: progress.unlocked(i),
+                    onTap: () {
+                      progress.setColor(i);
+                      updateDialog(() {});
+                    },
+                  ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Done'),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSettingRow(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF2E7D32),
+  Future<void> _grownUps() async {
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('For grown-ups'),
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Publisher: $publisherName',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
+              SizedBox(height: 16),
+              Text(
+                'Privacy & offline play',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(privacySummary),
+              if (supportEmail != '') ...[
+                SizedBox(height: 12),
+                SelectableText('Support: $supportEmail'),
+              ],
+              if (privacyPolicyUrl != '') ...[
+                SizedBox(height: 8),
+                SelectableText('Public policy: $privacyPolicyUrl'),
+              ],
+              SizedBox(height: 12),
+              Text('Designed for ages 6–8. Take breaks and play together.'),
+            ],
           ),
-          SizedBox(
-            width: 90,
-            height: 40,
-            child: TextField(
-              controller: controller,
-              key: UniqueKey(),
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF81C784)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF81C784)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
-                ),
-              ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => showLicensePage(
+              context: context,
+              applicationName: 'Little Dino',
+              applicationLegalese: 'Publisher: $publisherName',
             ),
+            child: const Text('Licenses'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final reset = await showDialog<bool>(
+                context: dialogContext,
+                builder: (confirmationContext) => AlertDialog(
+                  title: const Text('Erase local progress?'),
+                  content: const Text(
+                    'This resets all scores, stars, colors and settings on this device.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(confirmationContext, false),
+                      child: const Text('Keep progress'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(confirmationContext, true),
+                      child: const Text('Erase progress'),
+                    ),
+                  ],
+                ),
+              );
+              if (reset == true && mounted) {
+                progress.reset();
+                _bankedStars = 0;
+                game.home();
+              }
+            },
+            child: const Text('Reset progress'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Done'),
           ),
         ],
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: game.state == RunState.menu,
+    onPopInvokedWithResult: (didPop, _) {
+      if (didPop) return;
+      if (game.state == RunState.playing) {
+        game.pause();
+      } else {
+        game.home();
+      }
+    },
+    child: Scaffold(
+      body: SafeArea(
+        child: game.state == RunState.menu ? _menu() : _playfield(),
+      ),
+    ),
+  );
+
+  Widget _menu() => Center(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'A LITTLE HOP. A BIG ADVENTURE.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                letterSpacing: 1.6,
+                fontWeight: FontWeight.bold,
+                color: leaf,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Little Dino',
+              style: TextStyle(
+                fontSize: 46,
+                fontWeight: FontWeight.w900,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: SizedBox(
+                width: 170,
+                height: 170,
+                child: DinoAvatar(color: progress.color, effects: false),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'Ready, little explorer?',
+              style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            const _HowToJump(),
+            const SizedBox(height: 12),
+            Text(
+              'Best ${progress.best(_difficulty)} · Stars ${progress.stars}',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            ),
+            if (progress.storageError)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Progress could not be saved on this device. You can still play.',
+                      textAlign: TextAlign.center,
+                    ),
+                    TextButton(
+                      onPressed: progress.retrySave,
+                      child: const Text('Try saving again'),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _start,
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text('Play · ${_difficulty.label}'),
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextButton.icon(
+              onPressed: _settings,
+              icon: const Icon(Icons.tune_rounded),
+              label: const Text('Settings', style: TextStyle(fontSize: 17)),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Offline fun. No ads. Just adventure.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: leaf),
+            ),
+            TextButton(
+              onPressed: _grownUps,
+              child: const Text('For grown-ups'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _playfield() => Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Score ${game.score}',
+                style: const TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            Semantics(
+              label: '${game.runStars} stars this run',
+              child: Text(
+                'Stars ${game.runStars}',
+                style: const TextStyle(fontSize: 20, color: leaf),
+              ),
+            ),
+            const SizedBox(width: 12),
+            IconButton.filledTonal(
+              tooltip: 'Pause game',
+              onPressed: game.state == RunState.playing ? game.pause : null,
+              icon: const Icon(Icons.pause_rounded),
+              constraints: const BoxConstraints(minWidth: 52, minHeight: 52),
+            ),
+          ],
+        ),
+      ),
+      Expanded(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Semantics(
+              label:
+                  'Dinosaur play area. Tap to jump; tap again to double jump.',
+              button: true,
+              onTap: _jump,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: _jump,
+                child: ExcludeSemantics(
+                  child: GameScene(
+                    game: game,
+                    color: progress.color,
+                    effects:
+                        _effects && !MediaQuery.disableAnimationsOf(context),
+                  ),
+                ),
+              ),
+            ),
+            if (game.state == RunState.paused ||
+                game.state == RunState.gameOver)
+              ColoredBox(
+                color: ink.withValues(alpha: 0.3),
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 360),
+                      child: Card(
+                        color: cream,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                game.state == RunState.paused
+                                    ? Icons.coffee_rounded
+                                    : Icons.emoji_events_rounded,
+                                color: leaf,
+                                size: 48,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                game.state == RunState.paused
+                                    ? 'Take a little break'
+                                    : 'What an adventure!',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Score ${game.score} · ${game.runStars} stars',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                'Best ${progress.best(game.difficulty)} · ${game.difficulty.label}',
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: FilledButton(
+                                  onPressed: game.state == RunState.paused
+                                      ? game.resume
+                                      : _start,
+                                  child: Text(
+                                    game.state == RunState.paused
+                                        ? 'Keep going'
+                                        : 'Try again',
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: _settings,
+                                child: const Text('Settings'),
+                              ),
+                              TextButton(
+                                onPressed: game.home,
+                                child: const Text('Back home'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Text(
+          game.state == RunState.playing
+              ? 'Tap to hop · Tap again to go higher!'
+              : 'Your next adventure is just a hop away.',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+    ],
+  );
+}
+
+class _HowToJump extends StatelessWidget {
+  const _HowToJump();
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFE7EEDC),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: const Row(
+      children: [
+        Icon(Icons.touch_app_rounded, color: leaf, size: 38),
+        SizedBox(width: 14),
+        Expanded(
+          child: Text(
+            'Tap to jump.\nTap again to jump higher!',
+            style: TextStyle(fontSize: 17, height: 1.4),
+          ),
+        ),
+      ],
+    ),
+  );
 }

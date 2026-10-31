@@ -1,178 +1,72 @@
+# Little Dino
 
-  <h1 align="center">Flutter Dino Runner</h1>
-  <p align="center">
-    <strong>Chrome Dinosaur Game — Reimagined in Flutter</strong>
-  </p>
-  <p align="center">
-    A cross-platform dinosaur runner game inspired by Chrome's offline dino, built with Flutter. Features double jump, dynamic day-to-night sky transitions, animated rain particles, jump glow effects, and a game-over flash — all running at 60fps with custom painters and animation controllers.
-  </p>
-</p>
+A gentle Flutter dinosaur runner for children aged 6–8, published by
+**BlackAlpha-debug**. Offline gameplay, no advertising, no purchases, no accounts
+and no analytics. This repository is being prepared for Google Play; store
+publication still requires the owner's release details and device/user testing.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/flutter-3.x-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Flutter">
-  <img src="https://img.shields.io/badge/dart-3.x-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart">
-  <img src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Desktop-orange?style=flat-square" alt="Platforms">
-  <img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License">
-  <img src="https://img.shields.io/badge/status-playable-brightgreen?style=flat-square" alt="Status">
-</p>
+## Play
 
----
+Tap **Play**, then tap anywhere in the play area to jump. Tap again in the air
+for a double jump. Avoid cacti and flying dinosaurs, collect stars and unlock
+colors. Easy and Normal have separate saved best scores. Pause at any time;
+backgrounding the app pauses the run and requires an explicit resume.
 
-## Gameplay Preview
+Settings include difficulty, sound effects and extra effects. **For grown-ups**
+contains offline/privacy information, third-party licenses and confirmed local
+progress reset. Progress and preferences stay on the device.
 
+## Preview
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/65f87f77-b80e-4e94-a17e-ce53c22da2f6" alt="Day Sky" width="32%">
-  <img src="https://github.com/user-attachments/assets/f6ae0f29-652b-442c-b3a2-c0aee0c27baa" alt="Sunset Sky" width="32%">
-  <img src="https://github.com/user-attachments/assets/ffa8af64-e6ce-4eba-83b5-d1ba100ed259" alt="Night Sky with Rain" width="32%">
-</p>
+| Home | Gameplay | Pause |
+| --- | --- | --- |
+| ![Home](screenshots/menu.png) | ![Gameplay](screenshots/gameplay.png) | ![Pause](screenshots/paused.png) |
 
----
+## Development setup
 
-## Download APK
+Validated with Flutter 3.44.7 / Dart 3.12.2. Dependencies are locked in
+`pubspec.lock`. Android SDK and Java 17 are needed for command-line Android builds.
 
-<p align="center">
-  <a href="https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/latest/download/app-release.apk">
-    <img src="https://img.shields.io/badge/Download-APK%20(Latest)-brightgreen?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
-  </a>
-</p>
+```sh
+flutter pub get
+flutter run -d chrome
+flutter analyze --no-pub
+flutter test --no-pub
+flutter build apk --debug
+```
 
-| Version | Download |
-|---------|----------|
-| v2.0 (with effects) | [app-release.apk](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/latest/download/app-release.apk) |
-| v1.1 | [app-release.apk](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/1.1/app-release.apk) |
-| v1.0 | [app-release.apk](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/1.0/app-release.apk) |
-
-> **Install on Android:** Download the `.apk` file, enable "Install from unknown sources" in your device settings if prompted, and tap the downloaded file to install.
-
----
-
-## Features
-
-- **Double Jump** — tap once to jump, tap again mid-air for a higher + wider second jump
-- **Dynamic Sky Transitions** — background gradient shifts from day through sunset into night as your score climbs (every 100 points)
-- **Animated Rain** — a `CustomPainter` particle system draws falling rain streaks that intensify as the sky darkens; fully decorative, no collision interference
-- **Jump Glow Effect** — the dino pulses with a cyan tint on each jump using `ColorFiltered` and a dedicated `AnimationController`
-- **Game-Over Flash** — a brief red overlay flashes on collision via an animated opacity layer
-- **Progressive Difficulty** — fewer obstacles at low scores, density ramps up as you approach 800 points
-- **1.75x Speed** — faster base velocity for a more exciting pace
-- **Configurable Physics** — in-app settings dialog to tweak gravity, acceleration, jump velocity, and day/night offset in real time
-
----
+On Windows, run `powershell -File tools/verify.ps1` for the complete local check,
+or add `-SkipAndroidBuild` for Dart/widget checks only. No Android Studio or
+emulator is required. Connect a physical phone for Android gameplay verification.
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Flutter App                            │
-│                                                          │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │              AnimatedContainer                     │   │
-│  │         (score-based sky gradient)                 │   │
-│  │                                                    │   │
-│  │  ┌──────────────────────────────────────────┐     │   │
-│  │  │         Stack (game layers)               │     │   │
-│  │  │                                            │     │   │
-│  │  │  ┌─ RainEffect (CustomPainter)            │     │   │
-│  │  │  │   └─ particle system, IgnorePointer    │     │   │
-│  │  │  │                                         │     │   │
-│  │  │  ├─ Clouds / Ground / Cacti               │     │   │
-│  │  │  │   └─ AnimatedBuilder per object        │     │   │
-│  │  │  │                                         │     │   │
-│  │  │  ├─ Dino (_DinoWidget)                    │     │   │
-│  │  │  │   └─ ColorFiltered jump pulse          │     │   │
-│  │  │  │                                         │     │   │
-│  │  │  ├─ Score / High Score text               │     │   │
-│  │  │  │                                         │     │   │
-│  │  │  └─ Death flash overlay (red, animated)   │     │   │
-│  │  └──────────────────────────────────────────┘     │   │
-│  └──────────────────────────────────────────────────┘   │
-│                                                          │
-│  worldController (AnimationController, days: 99)         │
-│    └─ drives _update() → physics, collision, spawning    │
-└─────────────────────────────────────────────────────────┘
-```
+- `lib/game_engine.dart`: fixed-step simulation, explicit run states, safe obstacle
+  queues, capped difficulty, collision boxes, stars and distance-derived scenery.
+- `lib/main.dart`: accessible menu/game/pause/results flows and lifecycle handling.
+- `lib/game_scene.dart`, `lib/dino_avatar.dart`, `lib/rain.dart`: scaled logical
+  playfield, transparent character and simulation-driven visual effects.
+- `lib/player_progress.dart`: versioned local preferences, serialized writes,
+  separate scores, stars, unlocks and recoverable storage errors.
+- `lib/game_audio.dart`: short bundled effects; no remote audio.
+- `test/`: regression checks for simulation, UI and persistence.
+- `tools/generate_sounds.py`: reproducible original sound effects.
 
----
+## Plan and release
 
-## Quick Start
+- [Detailed implementation phases](docs/IMPLEMENTATION_PLAN.md)
+- [Android signing and Play Console checklist](docs/RELEASE.md)
+- [Privacy-policy draft — complete before hosting](docs/PRIVACY_POLICY_DRAFT.md)
+- [Asset provenance and rights checks](docs/ASSETS.md)
+- [Validation results and remaining manual checks](docs/VALIDATION.md)
 
-```bash
-# Clone the repository
-git clone https://github.com/BlackAlpha-debug/flutter-dinosaur.git
-cd flutter-dinosaur
-
-# Get dependencies
-flutter pub get
-
-# Run on your device
-flutter run
-```
-
-| Command | What it does |
-|---------|--------------|
-| `flutter run` | Launch on connected device / emulator |
-| `flutter run -d chrome` | Run as a web app in Chrome |
-| `flutter run -d windows` | Run as a Windows desktop app |
-| `flutter build apk` | Build a release APK for Android |
-
----
-
-## Project Structure
-
-```
-lib/
-  main.dart         Game screen, world controller, background gradient,
-                    obstacle spawning, death flash, rain integration
-  dino.dart         Dino class + _DinoWidget with jump pulse animation
-  rain.dart         RainEffect widget + RainPainter (CustomPainter particles)
-  constants.dart    Physics values, sky gradient palettes, tuning knobs
-  cactus.dart       Cactus obstacle (sprite + collision rect)
-  cloud.dart        Cloud decoration (parallax layer)
-  ground.dart       Scrolling ground tiles
-  game_object.dart  Abstract base class for all game entities
-  sprite.dart       Sprite data class (path, dimensions)
-  ptera.dart        Pterodactyl obstacle (unused, available for extension)
-
-assets/images/     All sprite sheets (dino frames, cacti, clouds, ground)
-```
-
----
-
-## Game Mechanics
-
-| Mechanic | Details |
-|----------|---------|
-| **Jumping** | First tap: normal jump. Second tap mid-air: 1.25x velocity boost |
-| **Speed** | Base velocity 52.5 (1.75x original), accelerates over time |
-| **Obstacles** | Extra gap (~390 units at score 0) shrinks linearly to 0 at score 800 |
-| **Sky phases** | Day → Early Sunset → Deep Sunset → Dusk → Night (every 100 pts) |
-| **Rain** | Starts at phase 2 (score 200), max intensity at phase 4 (score 400+) |
-| **Gravity** | 2500 (configurable via settings) |
-
----
-
-## Building the APK
-
-```bash
-# Debug APK
-flutter build apk --debug
-
-# Release APK (optimized, smaller)
-flutter build apk --release
-
-# The APK will be at:
-# build/app/outputs/flutter-apk/app-release.apk
-```
-
----
+Production builds deliberately require a permanent application ID, support
+email, hosted privacy-policy URL and private upload-key configuration. Read the
+release runbook. Never commit passwords, keystores or real signing properties.
 
 ## License
 
-MIT
-
----
-
-<p align="center">
-  Built with Flutter, custom painters, and a dinosaur that refuses to go extinct.
-</p>
+Original project code: MIT, Copyright 2022 Hevesh Lakhwani; see [LICENSE](LICENSE).
+Original artwork sources are preserved; their commercial-use rights must be
+verified by the publisher. See the asset provenance document. Platform/package
+licenses are accessible from the in-app grown-ups area.

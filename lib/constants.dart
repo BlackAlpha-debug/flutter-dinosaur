@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-int gravity = 2500;
+const int gravity = 2200;
 const int worlToPixelRatio = 10;
-double initialVelocity = 52.5;
-double acceleration = 1;
-int dayNightOffest = 1000;
-double jumpVelocity = 850;
+const double initialVelocity = 28;
+const double acceleration = 0.5;
+const double jumpVelocity = 760;
 
 const int skyPhaseInterval = 100;
 

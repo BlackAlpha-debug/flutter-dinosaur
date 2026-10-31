@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "externalRequests": [],
+  "checks": [
+    "menu",
+    "start",
+    "gameplay",
+    "pause",
+    "settings",
+    "resume",
+    "collision/results",
+    "home",
+    "stored best-score persistence after page reload",
+    "small screen"
+  ],
+  "savedBestScore": 86
+}

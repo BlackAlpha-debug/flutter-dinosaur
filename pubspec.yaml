@@ -1,5 +1,5 @@
 name: flutter_dinosaur
-description: A new Flutter project.
+description: A gentle offline dinosaur adventure for young explorers.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -15,10 +15,11 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -34,6 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  shared_preferences: 2.5.6
+  audioplayers: 6.8.1
 
 dev_dependencies:
   flutter_test:
@@ -57,17 +60,34 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/roboto-regular.ttf
+          weight: 400
+        - asset: assets/fonts/roboto-bold.ttf
+          weight: 700
+        - asset: assets/fonts/roboto-black.ttf
+          weight: 900
 
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/images/
-    - assets/images/dino/
-    - assets/images/Dino color/
+    - assets/fonts/roboto_license.txt
+    - assets/fonts/OFL_NotoSansSymbols.txt
+    - assets/font-fallbacks/notosanssymbols/v43/
+    - LICENSE
+    - assets/audio/
+    - assets/runtime/
+    - assets/images/cloud filled.png
+    - assets/images/Grass Ground.png
+    - assets/images/Stone Ground.png
+    - assets/images/Ice Ground.png
     - assets/images/cacti/
-    - assets/images/ptera/
+    - assets/images/ptera/ptera_1.png
+    - assets/images/ptera/ptera_2.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

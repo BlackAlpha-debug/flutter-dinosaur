@@ -22,9 +22,22 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+// Owner-specific identity and private signing material stay outside version control.
+def releaseProperties = new Properties()
+def releasePropertiesFile = rootProject.file('release.properties')
+if (releasePropertiesFile.exists()) {
+    releasePropertiesFile.withInputStream { releaseProperties.load(it) }
+}
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace "com.example.flutter_dinosaur"
     compileSdk flutter.compileSdkVersion
+    ndkVersion "28.2.13676358"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -40,18 +53,52 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.flutter_dinosaur"
+        applicationId releaseProperties.getProperty('applicationId', 'com.example.flutter_dinosaur')
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            signingConfig signingConfigs.debug
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreProperties['storeFile'] ? rootProject.file(keystoreProperties['storeFile']) : null
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+def validateProductionRelease = tasks.register('validateProductionRelease') {
+    doLast {
+        def appId = releaseProperties.getProperty('applicationId', '')
+        if (!appId.matches('[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+') || appId.startsWith('com.example.')) {
+            throw new GradleException('Set your permanent applicationId in android/release.properties. See docs/RELEASE.md.')
+        }
+        if (!releaseProperties.getProperty('supportEmail', '').contains('@') ||
+                !releaseProperties.getProperty('privacyPolicyUrl', '').startsWith('https://')) {
+            throw new GradleException('Provide supportEmail and a hosted HTTPS privacyPolicyUrl in android/release.properties.')
+        }
+        if (!keystorePropertiesFile.exists() ||
+                ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].any { !keystoreProperties[it] }) {
+            throw new GradleException('Configure your private upload key in android/key.properties. Debug signing is never used for release.')
+        }
+        if (!rootProject.file(keystoreProperties['storeFile']).exists()) {
+            throw new GradleException('The configured upload keystore file does not exist.')
+        }
+    }
+}
+tasks.matching { it.name == 'preReleaseBuild' }.configureEach {
+    dependsOn validateProductionRelease
 }
 
 flutter {

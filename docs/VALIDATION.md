@@ -1,0 +1,73 @@
+# Validation record — 2026-10-31
+
+## Verified locally
+
+- Flutter 3.44.7 / Dart 3.12.2 on Windows.
+- Phase 1: seven initial simulation regressions passed.
+- Expanded suite: 18 tests passed, including restart, double jump, on-screen jump
+  bounds, pause/resume, 30/120 Hz consistency, capped difficulty, safe recycling
+  over a simulated five-minute run, collision, positive small-obstacle hitboxes,
+  star banking, audio stop, confirmed reset, storage/reload/failure recovery,
+  lifecycle pause and small-screen enlarged-text UI.
+- Dart formatting and Flutter analyzer passed after final build integration.
+- Browser release build compiled successfully; modern Flutter bootstrap used.
+- Headless installed Chrome exercised menu, start, pause, settings, resume,
+  collision/results, home and local best-score persistence through page reload.
+  No JavaScript errors. Captured screenshots were inspected.
+- The initial browser pass detected remote fallback font requests. Roboto and
+  the engine's symbol fallback are now bundled locally. The final pass completed
+  all ten flow checks with zero external HTTP requests, zero JavaScript errors
+  and zero failed HTTP responses. Saved Easy best score 86 survived page reload.
+- Actual browser captures include 390×844 and 320×568 viewports. Screenshots and
+  machine-readable results are in `screenshots/`. Headless software-renderer GPU
+  readback warnings occurred during screenshots; these were not app exceptions.
+- Generated character alpha inspected: RGBA, transparent corner pixels. Originals
+  retained, only selected runtime art is bundled. Font/audio notices retained.
+- Production preflight correctly exits with a clear missing release.properties
+  message; no production signing files or passwords were created.
+- Gradle `:app:preReleaseBuild` also rejected missing production identity through
+  `validateProductionRelease`, before release compilation, with the documented
+  configuration message. This failure was expected and verifies the release guard.
+- Git remote identity verified: BlackAlpha-debug; remote main matched local HEAD
+  before changes.
+
+## Build integration
+
+- Initial Android build exposed old AGP/Kotlin warnings and a JNI NDK mismatch.
+  Updated to AGP 8.13.1, Kotlin 2.3.0 and installed NDK 28.2.13676358, matching
+  the current preferences Android implementation. Android debug build succeeded;
+  a final incremental build also passed with the completed local font assets.
+  APK manifest inspection confirms version 1.1.0+2, min SDK 24, target SDK 36,
+  Little Dino label, disabled backup and extraction rules. Debug-only INTERNET
+  permission is present for Flutter tooling, as expected; this is a debug APK.
+  Packaged game assets/fonts/audio total 1,935,258 uncompressed bytes; oversized
+  source illustration variants are excluded. This is not a Play download estimate.
+- Gradle emitted nonfatal embedded-Kotlin and Gradle-deprecation warnings from
+  the included Flutter build. The pinned Gradle 8.14.1 build succeeds; do not
+  switch to Gradle 9 without checking Flutter/plugin compatibility.
+- Final suite rerun passed all 18 tests in isolation. An earlier repeat had a
+  Flutter test-compiler temporary-file error before executing any tests; it was
+  stopped and rerun after compilation completed. No application test failed.
+
+## Required owner/device validation before store submission
+
+- Supply the permanent application ID, support email, hosted policy URL and upload
+  key. Complete the policy draft and verify commercial rights for supplied art.
+- Test the signed AAB through Play internal testing on physical Android phones:
+  low-end performance, startup, repeated retry, rapid double jump, interruptions,
+  screen lock/unlock, Android Back, saved progress, sound/mute and airplane mode.
+- Test actual tablet/foldable resizing, safe areas, large fonts, TalkBack and
+  reduced-animation settings. The scaled simulation keeps difficulty consistent;
+  simulated viewport tests do not replace physical-device accessibility testing.
+- Test native 16 KB page-size compatibility. A successful debug build or browser
+  run is not proof of signed-release native alignment or device compatibility.
+- Listen to effects on a real phone at several volume levels; verify no sounds
+  continue after backgrounding. Browser smoke checks do not evaluate loudness.
+- Play-test with children aged 6–8 and parents; tune reaction gaps, instructions,
+  retry encouragement and session lengths from observed feedback.
+- Complete Play declarations, developer verification, content rating, Data safety,
+  target audience and required closed testing/production access.
+
+Android Studio and the Android emulator were stopped at the owner's request and
+were not relaunched. Command-line Gradle compilation uses at most two workers.
+No Play Console upload, store publication or physical-device verification occurred.

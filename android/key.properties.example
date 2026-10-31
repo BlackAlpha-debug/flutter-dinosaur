@@ -1,0 +1,6 @@
+# Copy to key.properties (ignored by Git). Never commit real passwords/keys.
+# Relative storeFile paths resolve from the android directory; prefer forward slashes.
+storeFile=C:/YOUR_PRIVATE_DIRECTORY/upload-keystore.jks
+storePassword=YOUR_PRIVATE_PASSWORD
+keyAlias=upload
+keyPassword=YOUR_PRIVATE_PASSWORD

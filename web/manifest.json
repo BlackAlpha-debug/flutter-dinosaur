@@ -1,11 +1,11 @@
 {
-    "name": "flutter_dinosaur",
-    "short_name": "flutter_dinosaur",
+    "name": "Little Dino",
+    "short_name": "Little Dino",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFF9EC",
+    "theme_color": "#276B4D",
+    "description": "A gentle dinosaur adventure for young explorers.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

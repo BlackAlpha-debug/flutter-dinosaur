@@ -29,7 +29,7 @@ List<Sprite> cacti = [
     ..imageHeight = 70,
   Sprite()
     ..imagePath = "assets/images/cacti/cacti_small_3.png"
-    ..imageWidth = 107
+    ..imageWidth = 102
     ..imageHeight = 70,
 ];
 
@@ -37,7 +37,8 @@ class Cactus extends GameObject {
   final Sprite sprite;
   final Offset worldLocation;
 
-  Cactus({required this.worldLocation}) : sprite = cacti[Random().nextInt(cacti.length)];
+  Cactus({required this.worldLocation, Random? random})
+    : sprite = cacti[(random ?? Random()).nextInt(cacti.length)];
 
   @override
   Rect getRect(Size screenSize, double runDistance) {
@@ -52,10 +53,7 @@ class Cactus extends GameObject {
   @override
   Widget render() {
     return ColorFiltered(
-      colorFilter: const ColorFilter.mode(
-        Color(0xFF2E7D32),
-        BlendMode.srcATop,
-      ),
+      colorFilter: const ColorFilter.mode(Color(0xFF2E7D32), BlendMode.srcATop),
       child: Image.asset(sprite.imagePath),
     );
   }

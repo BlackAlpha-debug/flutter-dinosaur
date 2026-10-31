@@ -1,5 +1,33 @@
 # Dinosaur animation upgrade
 
+## Cartoon flying obstacle — 1.3.1+7
+
+`assets/runtime/ptera-flight.png` is a new transparent 4×2, eight-pose atlas,
+created November 1, 2026 with built-in imagegen. Sprout was a style reference
+only; the new coral/peach pterosaur faces left, toward the player. The former
+two pixel-art bird images are preserved in the repository but no longer bundled.
+
+Prompt: original friendly cartoon pterosaur; match Sprout's bold outlines, glossy
+shading, rounded baby proportions, expressive brown eye and happy face. Coral
+body, cream belly, peach wing membranes, rounded beak, little swept crest and
+tucked feet. Exactly four columns/two rows on a transparent 2:1 canvas. Eight
+looping wing poses: high, upper diagonal, level, lower diagonal, low, lower
+rising, level rising, upper rising. Identical head/body scale and position,
+complete wings/tail/beak with generous transparent margins. No scene, shadows,
+text, grid, borders, props or motion trails. A padding revision reduced sprite
+size and locked the eye location after a wingtip crossed a cell boundary.
+
+The final atlas has measured per-frame eye offsets to steady the body between
+rows. `SpriteAtlas` shares cached rendering with dinosaurs, with no independent
+animation controller. The wingbeat is eight poses at 80ms each (640ms per loop),
+driven by simulation elapsed time. Pausing freezes it; device reduced motion
+holds level wings. Visual poses preserve the existing 92×80 rectangle and all
+spawn, flight-height and collision rules. No additional attack/death states are
+introduced for this flying obstacle.
+
+Run `flutter test --dart-define=CAPTURE_PTERA=true test/ptera_test.dart` to export
+the actual Flutter-rendered pose sheet to `screenshots/ptera-wingbeat.png`.
+
 The existing avatars used one transparent illustration with bounce/tilt. This
 upgrade introduces a per-character sprite atlas with six running poses, a jump
 pose and a landing pose. Original character illustrations remain for static

@@ -63,5 +63,7 @@ Source: https://github.com/google/fonts/tree/main/ofl/notosanssymbols
 The original project license is MIT, Copyright 2022 Hevesh Lakhwani, retained in
 LICENSE and shown in the in-app licenses page. The publisher must verify the
 origin and commercial-use rights for the supplied illustration references,
-launcher icon, terrain, cloud, cactus and bird artwork before distribution.
+launcher icon, terrain, cloud and cactus artwork before distribution. The old
+pixel-art bird remains as source history; the bundled flyer now uses the new
+generated cartoon atlas documented in ANIMATION.md.
 An AI background extraction does not establish rights to its source illustration.

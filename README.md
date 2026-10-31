@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.3.0+6**. Android is the release target; the web build is
+Current app version: **1.3.1+7**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. A debug APK
@@ -35,6 +35,8 @@ this README does not imply that the app is already published.
 - **Four dinosaur friends:** preview their running and jumping before choosing one.
 - **Animated characters:** six running poses, a tucked jump, and a landing crouch;
   stride cadence follows game speed and pauses with the simulation.
+- **Cartoon flyer:** a coral pterosaur with an eight-pose looping wingbeat,
+  matching the illustrated dinosaurs and respecting reduced motion.
 - **Earned gold economy:** collect coins during runs and unlock cosmetic characters.
 - **Treasure trail:** seven daily gifts, a chest-opening animation, clear progress,
   and a larger final reward. Missing a day preserves the reward track.
@@ -66,7 +68,13 @@ this README does not imply that the app is already published.
   </tr>
 </table>
 
-Captures come from the headless browser smoke test. They illustrate the interface;
+<details>
+<summary>Flying character — wingbeat poses</summary>
+<p><img src="screenshots/ptera-wingbeat.png" alt="Eight cartoon pterosaur wing-flapping poses rendered by Flutter" width="640"></p>
+</details>
+
+Interface captures come from the headless browser smoke test; the wingbeat sheet
+is rendered by a Flutter widget test. They illustrate the interface;
 they are not measurements of Android frame rate or physical-device performance.
 
 ## How to play
@@ -212,6 +220,8 @@ lib/
   dino.dart                 Jump, landing, and character state
   dino_animation.dart       Distance-based animation frame selection
   dino_avatar.dart          Cached atlas rendering and color variants
+  sprite_atlas.dart         Shared decoded atlas renderer
+  ptera.dart                Cartoon flying obstacle and eight-pose wingbeat
   dino_catalog.dart          Character metadata and prices
   dino_shop_page.dart        Shop, collection, purchase, and live previews
   weekly_gifts_page.dart     Daily chest and seven-stop reward trail

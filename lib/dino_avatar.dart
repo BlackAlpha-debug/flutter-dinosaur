@@ -1,8 +1,8 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'dino_animation.dart';
 import 'dino_catalog.dart';
+import 'sprite_atlas.dart';
 
 /// Static portraits in menus; a shared, decoded atlas for gameplay/preview.
 class DinoAvatar extends StatelessWidget {
@@ -37,16 +37,17 @@ class DinoAvatar extends StatelessWidget {
       filterQuality: FilterQuality.medium,
     );
     if (running || jumping || landing) {
-      image = _AtlasSprite(
+      final frame = dinoFrame(
+        distance: distance,
+        running: running,
+        jumping: jumping,
+        landing: landing,
+        reduceMotion: reduceMotion,
+      );
+      image = SpriteAtlas(
         asset: character.animationAsset,
-        footBaselines: character.footBaselines,
-        frame: dinoFrame(
-          distance: distance,
-          running: running,
-          jumping: jumping,
-          landing: landing,
-          reduceMotion: reduceMotion,
-        ),
+        baseline: character.footBaselines[frame] / 443.5,
+        frame: frame,
         placeholder: image,
       );
     }
@@ -88,114 +89,4 @@ class DinoAvatar extends StatelessWidget {
       0,
     ];
   }
-}
-
-class _AtlasSprite extends StatefulWidget {
-  const _AtlasSprite({
-    required this.asset,
-    required this.footBaselines,
-    required this.frame,
-    required this.placeholder,
-  });
-  final String asset;
-  final List<double> footBaselines;
-  final int frame;
-  final Widget placeholder;
-
-  @override
-  State<_AtlasSprite> createState() => _AtlasSpriteState();
-}
-
-class _AtlasSpriteState extends State<_AtlasSprite> {
-  ImageStream? _stream;
-  ImageInfo? _info;
-  late final _listener = ImageStreamListener(_loaded);
-
-  void _loaded(ImageInfo info, bool synchronousCall) {
-    final previous = _info;
-    setState(() => _info = info);
-    previous?.dispose();
-  }
-
-  void _resolve() {
-    // 384 pixels per cell is sufficient for the 240dp preview; no per-frame
-    // decoding, file reads or independent tickers during the run.
-    final next = ResizeImage.resizeIfNeeded(
-      1536,
-      null,
-      AssetImage(widget.asset),
-    ).resolve(createLocalImageConfiguration(context));
-    if (_stream?.key == next.key) return;
-    _stream?.removeListener(_listener);
-    _info?.dispose();
-    _info = null;
-    _stream = next..addListener(_listener);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _resolve();
-  }
-
-  @override
-  void didUpdateWidget(covariant _AtlasSprite oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.asset != widget.asset) _resolve();
-  }
-
-  @override
-  void dispose() {
-    _stream?.removeListener(_listener);
-    _info?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => _info == null
-      ? widget.placeholder
-      : CustomPaint(
-          painter: _AtlasPainter(
-            _info!.image,
-            widget.frame,
-            widget.footBaselines[widget.frame] / 443.5,
-          ),
-        );
-}
-
-class _AtlasPainter extends CustomPainter {
-  _AtlasPainter(this.image, this.frame, this.footBaseline);
-  final ui.Image image;
-  final int frame;
-  final double footBaseline;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cellWidth = image.width / 4, cellHeight = image.height / 2;
-    final source = Rect.fromLTWH(
-      frame % 4 * cellWidth,
-      frame ~/ 4 * cellHeight,
-      cellWidth,
-      cellHeight,
-    ).deflate(0.5); // Avoid sampling a neighboring cell at fractional edges.
-    final side = min(size.width, size.height);
-    final destination = Rect.fromLTWH(
-      (size.width - side) / 2,
-      size.height - side * footBaseline,
-      side,
-      side,
-    );
-    canvas.drawImageRect(
-      image,
-      source,
-      destination,
-      Paint()..filterQuality = FilterQuality.medium,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _AtlasPainter oldDelegate) =>
-      oldDelegate.image != image ||
-      oldDelegate.frame != frame ||
-      oldDelegate.footBaseline != footBaseline;
 }

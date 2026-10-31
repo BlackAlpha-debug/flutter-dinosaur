@@ -11,6 +11,7 @@ import 'app_info.dart';
 import 'dino_avatar.dart';
 import 'frame_clock.dart';
 import 'privacy_policy_page.dart';
+import 'dino_shop_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -462,6 +463,31 @@ class _GameScreenState extends State<GameScreen>
               onPressed: _settings,
               icon: const Icon(Icons.tune_rounded),
               label: const Text('Settings', style: TextStyle(fontSize: 17)),
+            ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => DinoShopPage(progress: progress),
+                    ),
+                  ),
+                  icon: const Icon(Icons.storefront),
+                  label: const Text('Dino Shop'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          DinoShopPage(progress: progress, ownedOnly: true),
+                    ),
+                  ),
+                  icon: const Icon(Icons.pets),
+                  label: const Text('My Dinosaurs'),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             const Text(

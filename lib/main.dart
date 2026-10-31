@@ -640,10 +640,6 @@ class _GameScreenState extends State<GameScreen>
                                 'Score ${game.score} · Gold +${game.goldEarned}',
                                 style: const TextStyle(fontSize: 20),
                               ),
-                              Text(
-                                '${game.runPickups} pickups × 10 × ${game.difficulty.coinMultiplier} = ${game.goldEarned} gold',
-                                textAlign: TextAlign.center,
-                              ),
                               const SizedBox(height: 20),
                               Text(
                                 'Best ${progress.best(game.difficulty)} · ${game.difficulty.label}',

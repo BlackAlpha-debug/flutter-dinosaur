@@ -53,6 +53,7 @@ void main() {
     expect(progress.stars, 1);
     expect(progress.best(Difficulty.easy), greaterThanOrEqualTo(best));
     expect(audio.stops, greaterThan(0));
+    expect(find.textContaining('pickups ×'), findsNothing);
     await tester.pumpWidget(const SizedBox());
     await progress.flush();
     game.dispose();

@@ -9,6 +9,17 @@ class DinoCharacter {
   );
   final String id, name, species, asset, description;
   final int price;
+
+  String get animationAsset => 'assets/runtime/$id-run.png';
+
+  // Measured opaque foot baselines in the original 443.5px atlas cells.
+  // Airborne frame 6 uses the running baseline so tucked feet stay lifted.
+  List<double> get footBaselines => switch (id) {
+    'bramble' => [420, 420, 421, 420, 387, 387, 420, 388],
+    'sunny' => [406, 410, 407, 410, 406, 403, 406, 406],
+    'nova' => [417, 417, 417, 417, 389, 390, 417, 389],
+    _ => [418, 412, 417, 417, 403, 403, 418, 403],
+  };
 }
 
 const dinoCatalog = [

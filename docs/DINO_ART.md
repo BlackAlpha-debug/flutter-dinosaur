@@ -9,7 +9,8 @@ was a style reference. Original assets are preserved. Final outputs:
 
 All three: 1254×1254 RGBA, transparent corners, visually inspected complete
 silhouettes. Runtime decodes capped at 320 pixels, common physics/hitboxes.
-Animation is procedural bounce/tilt, not a new frame-by-frame sprite sheet.
+These portraits remain in static menus/cards. See ANIMATION.md for the later
+frame-by-frame run/jump/landing atlases used during movement.
 
 ## Final prompt set
 

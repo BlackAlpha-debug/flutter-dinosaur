@@ -120,10 +120,12 @@ class GameScene extends StatelessWidget {
                                 ? DinoAvatar(
                                     characterId: characterId,
                                     time: game.time,
+                                    distance: game.distance,
+                                    landing: game.dino.landingRemaining > 0,
                                     running:
-                                        game.dino.state == DinoState.running,
-                                    jumping:
-                                        game.dino.state == DinoState.jumping,
+                                        game.dino.state == DinoState.running ||
+                                        game.dino.state == DinoState.dead,
+                                    jumping: game.dino.dispY > 0,
                                     effects: effects,
                                     color: color,
                                   )

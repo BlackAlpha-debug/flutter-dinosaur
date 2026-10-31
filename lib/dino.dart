@@ -10,6 +10,7 @@ class Dino extends GameObject {
   double velY = 0;
   DinoState state = DinoState.idle;
   int _jumpCount = 0;
+  double landingRemaining = 0;
 
   @override
   Widget render() => const DinoAvatar();
@@ -29,12 +30,15 @@ class Dino extends GameObject {
       0.0,
       0.05,
     );
+    landingRemaining = (landingRemaining - dt).clamp(0, 0.10);
+    final wasAirborne = state == DinoState.jumping;
     dispY += velY * dt;
     if (dispY <= 0) {
       dispY = 0;
       velY = 0;
       _jumpCount = 0;
       state = DinoState.running;
+      if (wasAirborne) landingRemaining = 0.10;
     } else {
       velY -= gravity * dt;
     }
@@ -45,6 +49,7 @@ class Dino extends GameObject {
       return;
     }
     state = DinoState.jumping;
+    landingRemaining = 0;
     // The second jump stays inside the logical viewport even near the apex.
     velY = _jumpCount == 0 ? jumpVelocity : jumpVelocity * 1.1;
     _jumpCount++;

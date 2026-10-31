@@ -152,6 +152,39 @@ class _DinoPreviewPageState extends State<DinoPreviewPage>
     vsync: this,
     duration: const Duration(milliseconds: 650),
   );
+  bool _running = false;
+  bool _jumping = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _hop.stop();
+      _running = false;
+      _jumping = false;
+    }
+  }
+
+  void _toggleRun() {
+    setState(() => _running = !_running);
+    if (_jumping) return;
+    if (_running) {
+      _hop.repeat(period: const Duration(milliseconds: 600));
+    } else {
+      _hop.stop();
+    }
+  }
+
+  Future<void> _jumpPreview() async {
+    if (_jumping) return;
+    setState(() => _jumping = true);
+    _hop.stop();
+    await _hop.forward(from: 0);
+    if (!mounted) return;
+    setState(() => _jumping = false);
+    if (_running) _hop.repeat(period: const Duration(milliseconds: 600));
+  }
+
   @override
   void dispose() {
     _hop.dispose();
@@ -218,15 +251,24 @@ class _DinoPreviewPageState extends State<DinoPreviewPage>
                       height: 240,
                       child: AnimatedBuilder(
                         animation: _hop,
-                        builder: (context, child) => Transform.translate(
-                          offset: Offset(0, -sin(_hop.value * pi) * 25),
-                          child: child,
-                        ),
-                        child: DinoAvatar(
-                          characterId: dino.id,
-                          color: progress.color,
-                          effects: false,
-                        ),
+                        builder: (context, child) {
+                          final inAir = _jumping && _hop.value < .85;
+                          final height = inAir
+                              ? sin(_hop.value / .85 * pi) * 30
+                              : 0.0;
+                          return Transform.translate(
+                            offset: Offset(0, -height),
+                            child: DinoAvatar(
+                              characterId: dino.id,
+                              color: progress.color,
+                              effects: progress.effects,
+                              distance: _hop.value * 20,
+                              running: _running,
+                              jumping: inAir,
+                              landing: _jumping && !inAir,
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Text(
@@ -239,15 +281,33 @@ class _DinoPreviewPageState extends State<DinoPreviewPage>
                     ),
                     const SizedBox(height: 12),
                     Text(dino.description, textAlign: TextAlign.center),
-                    TextButton(
-                      onPressed: () {
-                        if (!MediaQuery.disableAnimationsOf(context) &&
-                            progress.effects) {
-                          _hop.forward(from: 0);
-                        }
-                      },
-                      child: const Text('Try a hop'),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 12,
+                      children: [
+                        TextButton(
+                          onPressed: MediaQuery.disableAnimationsOf(context)
+                              ? null
+                              : _toggleRun,
+                          child: Text(
+                            _running ? 'Stop running' : 'Run preview',
+                          ),
+                        ),
+                        TextButton(
+                          onPressed:
+                              MediaQuery.disableAnimationsOf(context) ||
+                                  _jumping
+                              ? null
+                              : _jumpPreview,
+                          child: const Text('Try a hop'),
+                        ),
+                      ],
                     ),
+                    if (MediaQuery.disableAnimationsOf(context))
+                      const Text(
+                        'Motion previews are off with your device animation setting.',
+                        textAlign: TextAlign.center,
+                      ),
                     const SizedBox(height: 16),
                     Text(
                       'Your gold: ${formatGold(progress.coins)}',

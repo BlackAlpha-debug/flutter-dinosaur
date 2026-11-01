@@ -1,5 +1,20 @@
 # Validation record
 
+## November 1, 2026 — painted ground surfaces (1.4.1+9)
+
+- Removed the three scrolling ground overlays from rendering and bundling. The
+  world's painted grass, sandstone or ice is now the surface. Contact shadows
+  anchor the dinosaur/cacti; jumps, actor dimensions, collision coordinates,
+  obstacle timing and rewards are unchanged.
+- All 63 tests pass and analysis is clean. Three new checks confirm the visual
+  dinosaur baseline and cactus collision ground across every biome. Optional
+  Flutter-rendered previews load the real fonts/icons; all three were inspected.
+- Native debug build, compatibility and official 16 KB zipalign checks passed.
+  The update installed successfully on the connected phone without clearing data;
+  package metadata confirms 1.4.1 / versionCode 9, API 24 minimum and target 36.
+- Source change: `2bee972`. Preview fixtures contain only test-side actors/coins;
+  no production debug mode or real-player progress changes were introduced.
+
 ## November 1, 2026 — interactive home and illustrated playfields (1.4.0+8)
 
 - Captured and inspected the current home/first-play flow before editing. The

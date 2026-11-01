@@ -1,5 +1,28 @@
 # Home and first-play review — November 1, 2026
 
+## Ground follow-up — 1.4.1+9
+
+The owner liked the new home and requested removal of the scrolling foreground
+strip. The three original tiled ground sprites are now unbundled; their source
+files remain in the repository. Each existing world illustration supplies its
+own continuous painted surface: jungle grass, canyon sandstone and crystal ice.
+Soft green/brown/blue contact shadows anchor the dinosaur and cacti at the same
+ground line. Airborne dinosaur shadows fade with height. No new artwork was
+required, and collision/jump/spawn/reward rules are unchanged.
+
+All three surfaces are captured by actual Flutter rendering with deterministic
+preview fixtures (dinosaur, cactus and coins). These fixtures are test-only and
+do not add a production debug mode:
+
+- [Jungle grass](../screenshots/ground-jungle.png)
+- [Canyon sandstone](../screenshots/ground-canyon.png)
+- [Crystal ice](../screenshots/ground-ice.png)
+
+Reproduce captures: `flutter test --dart-define=CAPTURE_GROUNDS=true test/world_ground_test.dart`.
+The tests verify the visual dinosaur baseline and cactus collision ground line
+for all three biomes. The earlier comparison captures below document 1.4.0;
+the surface previews above show the follow-up.
+
 Audience: ages 6–8. Goal: make starting an adventure understandable and inviting.
 No claim of improved retention or child appeal can be established without testing
 with children and parents.

@@ -1,5 +1,27 @@
 # Validation record
 
+## November 1, 2026 — continuous textured ice ground (1.4.4+12)
+
+- Extended the ice surface through the entire visible underside using one new
+  full-depth frozen tile; removed the former short ice image and flat blue fill
+  from current rendering/bundling. Grass/mud, stone, approved home, obstacles,
+  animations, physics and rewards are preserved.
+- New 1254×1254 RGBA artwork uses the original ice for material reference and
+  the approved stone image for composition/depth. Selected file, prompts, source
+  roles and measured placement are documented in HOME_EXPERIENCE.md.
+- The targeted Ice Trail render/alignment check passed, and its real Flutter
+  capture was inspected through the full viewport including the repeat edge.
+  The textured underside covers the viewport; no flat blue panel is visible.
+- All 65 tests passed; analysis and formatting clean. Android debug APK built;
+  native compatibility and official 16 KB zipalign passed. ZIP inspection confirms
+  both deep terrain assets, home and obstacle atlases are included, while the
+  former ice strip and two gameplay landscapes are excluded.
+- Package metadata confirms 1.4.4 / versionCode 12, minimum API 24 and target 36.
+  README references resolve. The phone remains disconnected, so the APK is ready
+  but this version was not installed or physically tested. Gradle was stopped;
+  no Android Studio/emulator was used.
+- Art commit: `6a0c857`; implementation commit: `446750e`.
+
 ## November 1, 2026 — classic scenery and continuous stone ground (1.4.3+11)
 
 - Owner confirmed restoring the original scrolling ground strips and removing

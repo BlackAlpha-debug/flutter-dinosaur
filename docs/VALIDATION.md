@@ -1,5 +1,27 @@
 # Validation record
 
+## November 1, 2026 — downloadable APK and connected-phone update
+
+- Installed the exact verified 1.4.4 APK on the connected phone using an in-place
+  update. Android package metadata confirmed version 1.4.4 / versionCode 12,
+  minimum API 24 and target API 36. App data was not cleared.
+- Published [v1.4.4-preview.1](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.4.4-preview.1)
+  as a public GitHub prerelease under authenticated account BlackAlpha-debug.
+  It contains `little-dino-1.4.4-preview.apk` and its `.sha256` file, clearly
+  labelled as a debug-signed Android test build rather than a Play Store release.
+- Remote APK size is 170,221,132 bytes. GitHub's SHA-256 digest matches the local
+  and installed APK: `e249759cd6527afb1dcdc7d8357ba77630d5196198515a6de6695174842318ab`.
+  Anonymous checks returned HTTP 200 for the release page, APK and checksum file;
+  the APK download reported the expected full Content-Length.
+- Tag source is `3cfa77893368e502630ddc7d16e15b800ca067f3`. The application code,
+  Android configuration, dependencies and assets still match the previously
+  verified APK revision. Its 65 passing tests/native checks are recorded below;
+  documentation-only download updates did not rebuild or replace the APK.
+- README now includes a direct download section and link; RELEASE.md includes
+  the preview, checksum and distinction from production signing. Local README
+  references and `git diff --check` passed. The APK is a release asset, not a
+  large binary committed into the source tree.
+
 ## November 1, 2026 — continuous textured ice ground (1.4.4+12)
 
 - Extended the ice surface through the entire visible underside using one new

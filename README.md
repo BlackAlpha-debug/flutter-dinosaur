@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/Android-7.0%2B-276B4D" alt="Android 7.0 and later">
     <img src="https://img.shields.io/badge/Play-Offline-EAB94F" alt="Offline gameplay">
   </p>
-  <p><a href="#screenshots">Screenshots</a> · <a href="#getting-started">Get started</a> · <a href="#testing">Testing</a> · <a href="#google-play-release">Release guide</a> · <a href="docs/PRIVACY_POLICY.md">Privacy policy</a></p>
+  <p><a href="#download-android-apk">Download APK</a> · <a href="#screenshots">Screenshots</a> · <a href="#getting-started">Get started</a> · <a href="#testing">Testing</a> · <a href="#google-play-release">Release guide</a> · <a href="docs/PRIVACY_POLICY.md">Privacy policy</a></p>
 </div>
 
 ## About the project
@@ -23,9 +23,9 @@ Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
 Current app version: **1.4.4+12**. Android is the release target; the web build is
 also used for development and visual checks.
 
-**Release status:** in development and being prepared for Google Play. A debug APK
-is available through successful repository workflow runs for testing. A signed
-store release still needs publisher configuration and physical-device testing;
+**Release status:** in development and being prepared for Google Play. The latest
+test APK is available from [GitHub Releases](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.4.4-preview.1).
+A signed store release still needs publisher configuration and physical-device testing;
 this README does not imply that the app is already published.
 
 ## Features
@@ -125,6 +125,20 @@ A complete trail gives **2,000 gold**. Claim one gift per local calendar day;
 after gift 7, a fresh trail becomes available on a new day. Gifts are fixed and
 shown in advance. Missed days do not erase reward progress. The visit streak is
 separate from the gift track and does not change reward amounts.
+
+## Download Android APK
+
+**[Download Little Dino 1.4.4 APK](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.4.4-preview.1/little-dino-1.4.4-preview.apk)**
+
+For **Android 7.0 and later**. Open the downloaded APK on your phone and follow
+Android's installation prompts. This is a **debug-signed test build**, not the
+Google Play production release.
+
+[Release notes](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.4.4-preview.1)
+· [SHA-256 checksum](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.4.4-preview.1/little-dino-1.4.4-preview.apk.sha256)
+
+The release contains the same version **1.4.4 / build 12** tested on the connected
+Android phone. Workflow artifacts remain available as an alternative for developers.
 
 ## Getting started
 

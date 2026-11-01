@@ -1,5 +1,32 @@
 # Validation record
 
+## November 1, 2026 — classic scenery and continuous stone ground (1.4.3+11)
+
+- Owner confirmed restoring the original scrolling ground strips and removing
+  illustrated landscapes from gameplay. The approved home, themed rock/ice
+  obstacles, character animations, physics and rewards are preserved.
+- Restored the original open sky, sun/moon, small clouds, grass/mud and ice.
+  Stone now uses one new full-depth rock image for its ledge and underside;
+  alternating mirrored repeats avoid a hard edge. All three visual actor
+  baselines remain aligned to the existing collision ground.
+- All 65 tests pass; analysis and formatting clean. Three targeted ground
+  previews and both obstacle checks also passed. Real Flutter captures of grass,
+  stone and ice were inspected; stone capture includes a tile boundary and shows
+  texture down to the bottom of the viewport. The obstacle-size gallery was
+  refreshed for the current trail labels.
+- Debug APK built; native compatibility and official 16 KB zipalign passed.
+  Package metadata confirms 1.4.3 / versionCode 11, minimum API 24 and target 36.
+  ZIP checks decode URI-escaped asset names and confirm grass/ice, deep stone,
+  both obstacle atlases and home art are bundled; the two gameplay landscape
+  paintings are excluded. Local README references resolve.
+- The connected phone was unavailable at the end of this build. The APK is ready
+  at `build/app/outputs/flutter-apk/app-debug.apk`; this revision was not installed
+  or physically play-tested in this run. Gradle was stopped. No Android Studio
+  or emulator was launched.
+- Art commit: `a91b278`; implementation commit: `fbcd86f`. Artwork source,
+  prompt, selected runtime path and current/historical design notes are in
+  HOME_EXPERIENCE.md.
+
 ## November 1, 2026 — world-matched rock and ice obstacles (1.4.2+10)
 
 - Jungle keeps its cacti; canyon uses warm sandstone blocks; crystal valley

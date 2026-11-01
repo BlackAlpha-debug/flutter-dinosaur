@@ -40,7 +40,7 @@ for 14 days for device testing. This is not a Play release bundle.
 5. Set an unused increasing versionCode using `pubspec.yaml` or build flags.
 6. Run `powershell -File tools/build_release.ps1`. It validates identity and key
    file configuration before invoking Flutter, then embeds the public contact
-   details. The current pubspec version is 1.3.1+7; increase it for later uploads.
+   details. The current pubspec version is 1.4.0+8; increase it for later uploads.
    The artifact is under `build/app/outputs/bundle/release/`.
 7. Inspect the bundle's package name, target SDK, merged permissions and native
    alignment. Verify 64-bit and 16 KB support with Android tooling and a suitable

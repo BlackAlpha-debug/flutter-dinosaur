@@ -8,7 +8,7 @@ import 'game_scene.dart';
 import 'game_audio.dart';
 import 'player_progress.dart';
 import 'app_info.dart';
-import 'dino_avatar.dart';
+import 'adventure_home.dart';
 import 'frame_clock.dart';
 import 'privacy_policy_page.dart';
 import 'dino_shop_page.dart';
@@ -386,143 +386,23 @@ class _GameScreenState extends State<GameScreen>
     ),
   );
 
-  Widget _menu() => Center(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'A LITTLE HOP. A BIG ADVENTURE.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                letterSpacing: 1.6,
-                fontWeight: FontWeight.bold,
-                color: leaf,
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Little Dino',
-              style: TextStyle(
-                fontSize: 46,
-                fontWeight: FontWeight.w900,
-                height: 1.1,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: SizedBox(
-                width: 170,
-                height: 170,
-                child: DinoAvatar(
-                  characterId: progress.selectedDino,
-                  color: progress.color,
-                  effects: false,
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-            const Text(
-              'Ready, little explorer?',
-              style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            const _HowToJump(),
-            const SizedBox(height: 12),
-            Text(
-              'Best ${progress.best(_difficulty)} · Gold ${progress.coins}',
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-            ),
-            if (progress.storageError)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Progress could not be saved on this device. You can still play.',
-                      textAlign: TextAlign.center,
-                    ),
-                    TextButton(
-                      onPressed: progress.retrySave,
-                      child: const Text('Try saving again'),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: _start,
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: Text('Play · ${_difficulty.label}'),
-              ),
-            ),
-            Text(
-              '${_difficulty.coinMultiplier}× gold on this difficulty',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            TextButton.icon(
-              onPressed: _settings,
-              icon: const Icon(Icons.tune_rounded),
-              label: const Text('Settings', style: TextStyle(fontSize: 17)),
-            ),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => DinoShopPage(progress: progress),
-                    ),
-                  ),
-                  icon: const Icon(Icons.storefront),
-                  label: const Text('Dino Shop'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) =>
-                          DinoShopPage(progress: progress, ownedOnly: true),
-                    ),
-                  ),
-                  icon: const Icon(Icons.pets),
-                  label: const Text('My Dinosaurs'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Offline fun. No ads. Just adventure.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: leaf),
-            ),
-            TextButton.icon(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => WeeklyGiftsPage(progress: progress),
-                ),
-              ),
-              icon: const Icon(Icons.card_giftcard),
-              label: Text(
-                progress.giftAvailable
-                    ? 'Weekly Gifts · Gift ready'
-                    : 'Weekly Gifts',
-              ),
-            ),
-            TextButton(
-              onPressed: _grownUps,
-              child: const Text('For grown-ups'),
-            ),
-          ],
-        ),
+  Widget _menu() => AdventureHome(
+    progress: progress,
+    difficulty: _difficulty,
+    onPlay: _start,
+    onSettings: _settings,
+    onGrownUps: _grownUps,
+    onShop: () => Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => DinoShopPage(progress: progress)),
+    ),
+    onCollection: () => Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => DinoShopPage(progress: progress, ownedOnly: true),
+      ),
+    ),
+    onGifts: () => Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => WeeklyGiftsPage(progress: progress),
       ),
     ),
   );
@@ -690,29 +570,5 @@ class _GameScreenState extends State<GameScreen>
           ),
         ),
     ],
-  );
-}
-
-class _HowToJump extends StatelessWidget {
-  const _HowToJump();
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: const Color(0xFFE7EEDC),
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: const Row(
-      children: [
-        Icon(Icons.touch_app_rounded, color: leaf, size: 38),
-        SizedBox(width: 14),
-        Expanded(
-          child: Text(
-            'Tap to jump.\nTap again to jump higher!',
-            style: TextStyle(fontSize: 17, height: 1.4),
-          ),
-        ),
-      ],
-    ),
   );
 }

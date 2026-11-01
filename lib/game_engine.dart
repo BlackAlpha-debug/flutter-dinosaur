@@ -66,6 +66,7 @@ class GameEngine extends ChangeNotifier {
   double _nextObstacle = 95;
   double _nextCoin = 65;
   int runPickups = 0;
+  double lastPickupTime = double.negativeInfinity;
   final List<GameObject> obstacles = [];
   final List<Collectible> coins = [];
 
@@ -81,6 +82,7 @@ class GameEngine extends ChangeNotifier {
     speed = selected.startSpeed;
     time = 0;
     runPickups = 0;
+    lastPickupTime = double.negativeInfinity;
     _accumulator = 0;
     _nextObstacle = 95;
     _nextCoin = 65;
@@ -110,6 +112,7 @@ class GameEngine extends ChangeNotifier {
     coins.clear();
     distance = 0;
     time = 0;
+    lastPickupTime = double.negativeInfinity;
     _accumulator = 0;
     notifyListeners();
   }
@@ -190,6 +193,7 @@ class GameEngine extends ChangeNotifier {
       final rect = star.rect(distance);
       if (player.overlaps(rect)) {
         runPickups++;
+        lastPickupTime = time;
         return true;
       }
       return rect.right < 0;

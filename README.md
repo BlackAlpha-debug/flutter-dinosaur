@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.3.1+7**. Android is the release target; the web build is
+Current app version: **1.4.0+8**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. A debug APK
@@ -30,6 +30,10 @@ this README does not imply that the app is already published.
 
 ## Features
 
+- **An interactive home:** a sunny jungle scene with your chosen dinosaur,
+  a tap-to-hop preview, a prominent Play button, and picture-led destinations.
+- **Three illustrated trails:** a lush jungle, a warm sunset canyon, and a crystal
+  valley, with slow scenery movement and short coin-collection sparkles.
 - **Simple controls:** tap to jump and tap again in the air for a double jump.
 - **Three difficulties:** Easy, Normal, and Hard, each with its own saved best score.
 - **Four dinosaur friends:** preview their running and jumping before choosing one.
@@ -215,8 +219,10 @@ fixture exercises purchases; the production app has no debug coin-grant control.
 ```text
 lib/
   main.dart                 App theme, navigation, game screens, lifecycle
+  adventure_home.dart       Interactive jungle home and picture navigation
   game_engine.dart          Fixed-step simulation and difficulty rules
   game_scene.dart           Scaled playfield and scenery
+  world_scenery.dart         Illustrated biomes and background movement
   dino.dart                 Jump, landing, and character state
   dino_animation.dart       Distance-based animation frame selection
   dino_avatar.dart          Cached atlas rendering and color variants
@@ -299,6 +305,7 @@ passwords, private keys, or real signing property files.
 | [Implementation plan](docs/IMPLEMENTATION_PLAN.md) | Original audit and release preparation phases |
 | [Coins, characters, and gifts](docs/COINS_CHARACTERS_PLAN.md) | Economy rules and feature implementation phases |
 | [Animation](docs/ANIMATION.md) | Sprite provenance, frame timing, and verification |
+| [Home and playfield redesign](docs/HOME_EXPERIENCE.md) | Captured UX review, design choices, artwork and evidence limits |
 | [Validation](docs/VALIDATION.md) | Completed checks and remaining manual testing |
 | [Release runbook](docs/RELEASE.md) | Signing, identity, and Google Play preparation |
 | [Android compatibility](docs/ANDROID_COMPATIBILITY.md) | Platform support and performance choices |

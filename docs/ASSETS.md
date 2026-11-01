@@ -32,6 +32,14 @@ Exact tool prompt:
 > checkerboard baked into pixels, no new objects. The isolated silhouette must
 > read cleanly at 88 pixels high.
 
+## Adventure world artwork
+
+Home and gameplay now use three original generated landscape illustrations in
+`assets/runtime/`: `home-jungle.png`, `world-canyon.png`, and `world-ice.png`.
+The jungle image is shared across home and gameplay. Prompts, references and
+the design review are in [HOME_EXPERIENCE.md](HOME_EXPERIENCE.md). Runtime decode
+is capped at 1000px wide; no external image service is used by the app.
+
 ## Weekly gift artwork
 
 The weekly gift treasure chest is original vector artwork drawn by

@@ -1,12 +1,13 @@
 # Asset provenance and runtime use
 
-## Current terrain revision — 1.4.3
+## Current terrain revision — 1.4.4
 
-Gameplay uses the original grass and ice ground strips and a new full-depth
-stone tile (`assets/runtime/stone-ground-deep.png`), with the original open sky,
-sun/moon and clouds. Stone top and underside are one illustrated rock formation,
-not a textured strip over a flat grey fill. Original reference, selected output,
-prompt and measured placement are documented in HOME_EXPERIENCE.md.
+Gameplay uses the original grass/mud and full-depth stone/ice tiles
+(`assets/runtime/stone-ground-deep.png` and `ice-ground-deep.png`), with the
+original open sky, sun/moon and clouds. Each deep tile connects its walking
+surface through the entire visible underside. Original references, selected
+outputs, prompts and measured placement are documented in HOME_EXPERIENCE.md.
+The inherited short ice strip remains as source history and is no longer bundled.
 
 `world-canyon.png` and `world-ice.png` are retained as source history and excluded
 from the APK. `home-jungle.png` remains in the approved home screen. The current

@@ -184,7 +184,9 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _start() {
-    unawaited(precacheImage(GroundSurface.imageFor(1), context));
+    for (final terrain in [1, 2]) {
+      unawaited(precacheImage(GroundSurface.imageFor(terrain), context));
+    }
     // Prepare the later biome skins before the first scenery transition.
     for (final asset in GroundObstacleAvatar.assets) {
       unawaited(

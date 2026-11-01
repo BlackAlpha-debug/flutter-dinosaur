@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.4.3+11**. Android is the release target; the web build is
+Current app version: **1.4.4+12**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. A debug APK
@@ -33,8 +33,8 @@ this README does not imply that the app is already published.
 - **An interactive home:** a sunny jungle scene with your chosen dinosaur,
   a tap-to-hop preview, a prominent Play button, and picture-led destinations.
 - **Three classic trails:** grass and mud, textured stone, and ice, with the
-  original open sky and scrolling ground. The stone ledge and its deep underside
-  share one continuous rocky texture. Collection sparkles and shadows remain.
+  original open sky and scrolling ground. Stone and ice each have a textured
+  ledge that continues through the entire underside. Collection sparkles and shadows remain.
 - **Matching obstacles:** grassland cacti, warm rock blocks on the stone trail,
   and blue upright slabs on the ice trail, with smaller/larger groups.
 - **Simple controls:** tap to jump and tap again in the air for a double jump.

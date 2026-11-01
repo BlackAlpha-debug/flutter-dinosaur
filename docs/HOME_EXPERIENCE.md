@@ -1,5 +1,47 @@
 # Home and first-play review — November 1, 2026
 
+## Biome obstacle follow-up — 1.4.2+10
+
+Ground obstacles now match the current world: jungle cacti, warm canyon rock
+blocks and upright crystal-valley ice slabs. Each has the same six original
+width/height combinations. Three illustrated arrangements (single, pair and a
+three-piece cluster with mixed heights) are fitted into those existing boxes.
+The world selects the skin while rendering, so queued obstacles also change
+with the scenery; no old-world cactus persists into the canyon or ice stage.
+The flying obstacle is unchanged. Both themed atlases are prepared when a run
+starts to avoid a late image decode at the first world change.
+
+[All variants](../screenshots/biome-obstacles.png),
+[canyon rocks](../screenshots/ground-canyon.png),
+[three-slab ice cluster](../screenshots/ground-ice.png).
+These are actual Flutter renders of deterministic test fixtures. Reproduce:
+`flutter test --dart-define=CAPTURE_OBSTACLES=true --dart-define=CAPTURE_GROUNDS=true test/biome_obstacle_test.dart test/world_ground_test.dart`.
+
+### Obstacle artwork provenance
+
+Built-in imagegen, November 1, 2026; both selected atlases are 1774×887 RGBA with
+four columns and two rows. Final runtime paths:
+
+- `assets/runtime/obstacles-rocks.png`, referenced `world-canyon.png` for style.
+- `assets/runtime/obstacles-ice.png`, referenced `world-ice.png` for style.
+
+Common prompt: isolated static cartoon ground obstacles, same bold painted
+style as the scene, exactly 4×2 square cells on transparent 2:1 canvas, complete
+silhouettes, generous clear margins, aligned bases, no floor strip, scenery,
+shadow, labels or grid. Reading-order variants: tall three-piece mixed-height
+group, tall single, tall pair, small single, short pair, short group, angled tall
+piece and alternative group. Rocks: rounded terracotta/apricot sandstone blocks,
+peach highlights, warm outlines and a few broad cracks. Ice: cyan/turquoise
+upright blunt slabs, deep-blue/lavender outlines, white glints and snow caps,
+different heights within groups; no needle spikes. The first rock sheet was
+rejected for edge marks/spacing, then revised with 15% clear margins and no grid.
+Generated originals were preserved; the selected files were copied into runtime.
+
+Measured source rectangles remove transparent margins before fitting art into
+the original obstacle boxes, keeping visible geometry consistent with the
+existing forgiving collision rules. The shared renderer's defaults for dinosaurs
+and the flyer are unchanged. No new accounts, SDKs or network behavior are added.
+
 ## Ground follow-up — 1.4.1+9
 
 The owner liked the new home and requested removal of the scrolling foreground

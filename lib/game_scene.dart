@@ -181,6 +181,8 @@ class GameScene extends StatelessWidget {
                                     effects: effects,
                                     color: color,
                                   )
+                                : object is Cactus
+                                ? object.renderForTerrain(game.terrain)
                                 : object.render(),
                           ),
                         if (effects && pickupAge >= 0 && pickupAge < .45)

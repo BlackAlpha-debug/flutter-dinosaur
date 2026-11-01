@@ -9,12 +9,16 @@ class SpriteAtlas extends StatefulWidget {
     required this.asset,
     this.baseline = 1,
     this.offset = Offset.zero,
+    this.sourceBounds = const Rect.fromLTWH(0, 0, 1, 1),
+    this.stretch = false,
     required this.frame,
     required this.placeholder,
   });
   final String asset;
   final double baseline;
   final Offset offset;
+  final Rect sourceBounds;
+  final bool stretch;
   final int frame;
   final Widget placeholder;
 
@@ -76,32 +80,45 @@ class _SpriteAtlasState extends State<SpriteAtlas> {
             widget.frame,
             widget.baseline,
             widget.offset,
+            widget.sourceBounds,
+            widget.stretch,
           ),
         );
 }
 
 class _AtlasPainter extends CustomPainter {
-  _AtlasPainter(this.image, this.frame, this.footBaseline, this.offset);
+  _AtlasPainter(
+    this.image,
+    this.frame,
+    this.footBaseline,
+    this.offset,
+    this.sourceBounds,
+    this.stretch,
+  );
   final ui.Image image;
   final int frame;
   final double footBaseline;
   final Offset offset;
+  final Rect sourceBounds;
+  final bool stretch;
 
   @override
   void paint(Canvas canvas, Size size) {
     final cellWidth = image.width / 4, cellHeight = image.height / 2;
     final source = Rect.fromLTWH(
-      frame % 4 * cellWidth,
-      frame ~/ 4 * cellHeight,
-      cellWidth,
-      cellHeight,
+      (frame % 4 + sourceBounds.left) * cellWidth,
+      (frame ~/ 4 + sourceBounds.top) * cellHeight,
+      sourceBounds.width * cellWidth,
+      sourceBounds.height * cellHeight,
     ).deflate(0.5); // Avoid sampling a neighboring cell at fractional edges.
     final side = min(size.width, size.height);
+    final drawWidth = stretch ? size.width : side;
+    final drawHeight = stretch ? size.height : side;
     final destination = Rect.fromLTWH(
-      (size.width - side) / 2 + side * offset.dx,
-      size.height - side * footBaseline + side * offset.dy,
-      side,
-      side,
+      (size.width - drawWidth) / 2 + drawWidth * offset.dx,
+      size.height - drawHeight * footBaseline + drawHeight * offset.dy,
+      drawWidth,
+      drawHeight,
     );
     canvas.drawImageRect(
       image,
@@ -116,5 +133,7 @@ class _AtlasPainter extends CustomPainter {
       oldDelegate.image != image ||
       oldDelegate.frame != frame ||
       oldDelegate.footBaseline != footBaseline ||
-      oldDelegate.offset != offset;
+      oldDelegate.offset != offset ||
+      oldDelegate.sourceBounds != sourceBounds ||
+      oldDelegate.stretch != stretch;
 }

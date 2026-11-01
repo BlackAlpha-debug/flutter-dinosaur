@@ -9,6 +9,7 @@ import 'game_audio.dart';
 import 'player_progress.dart';
 import 'app_info.dart';
 import 'adventure_home.dart';
+import 'cactus.dart';
 import 'frame_clock.dart';
 import 'privacy_policy_page.dart';
 import 'dino_shop_page.dart';
@@ -182,6 +183,15 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _start() {
+    // Prepare the later biome skins before the first scenery transition.
+    for (final asset in GroundObstacleAvatar.assets) {
+      unawaited(
+        precacheImage(
+          ResizeImage.resizeIfNeeded(1536, null, AssetImage(asset)),
+          context,
+        ),
+      );
+    }
     _bankedPickups = 0;
     _lastHudUpdate = 0;
     game.start(_difficulty);

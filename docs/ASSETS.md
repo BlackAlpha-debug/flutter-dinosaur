@@ -45,6 +45,14 @@ Since 1.4.1, these paintings also provide the playable ground surface. The forme
 are preserved as source history but are no longer bundled or rendered by the
 current game. Contact shadows are standard Flutter decoration effects.
 
+## Biome obstacle artwork
+
+`assets/runtime/obstacles-rocks.png` and `obstacles-ice.png` are original generated
+transparent atlases, referencing the corresponding landscapes for style. Current
+world selection changes the ground obstacle's artwork while preserving its
+model, size and collision rules. Prompts and preview fixtures are documented in
+[HOME_EXPERIENCE.md](HOME_EXPERIENCE.md). Jungle retains the inherited cactus art.
+
 ## Weekly gift artwork
 
 The weekly gift treasure chest is original vector artwork drawn by

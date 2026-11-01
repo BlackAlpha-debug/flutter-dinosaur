@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.4.1+9**. Android is the release target; the web build is
+Current app version: **1.4.2+10**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. A debug APK
@@ -35,6 +35,8 @@ this README does not imply that the app is already published.
 - **Three illustrated trails:** a lush jungle, a warm sunset canyon, and a crystal
   valley, with matching painted grass, sandstone and ice, soft contact shadows,
   slow scenery movement and short coin-collection sparkles.
+- **Matching obstacles:** jungle cacti, warm sandstone rock blocks in the canyon,
+  and blue upright ice slabs in the crystal valley, with smaller/larger groups.
 - **Simple controls:** tap to jump and tap again in the air for a double jump.
 - **Three difficulties:** Easy, Normal, and Hard, each with its own saved best score.
 - **Four dinosaur friends:** preview their running and jumping before choosing one.
@@ -86,7 +88,7 @@ they are not measurements of Android frame rate or physical-device performance.
 
 1. Choose a difficulty in **Settings**, then select **Play**.
 2. Tap the play area to jump over obstacles. Tap once more in the air to jump higher.
-3. Collect gold, avoid cacti and flying dinosaurs, and build your best score.
+3. Collect gold, avoid ground obstacles and flying dinosaurs, and build your best score.
 4. Pause whenever you need. Your earned gold is banked as the run progresses.
 5. Visit **Dino Shop** to preview or buy a character, and **My Dinosaurs** to equip it.
 

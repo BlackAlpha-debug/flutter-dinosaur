@@ -1,5 +1,39 @@
 # Home and first-play review — November 1, 2026
 
+## Classic gameplay scenery restored — 1.4.3+11
+
+The owner requested removal of the illustrated gameplay landscapes and confirmed
+restoring the original scrolling ground strips. The home screen remains as
+approved. Gameplay now shows the original sky gradient, sun/moon and small clouds,
+with Grass Trail, Stone Trail and Ice Trail labels. Original grass/mud and ice
+surfaces are restored. Canyon/crystal landscape source files remain in the
+repository as history but are no longer bundled or rendered in gameplay.
+The home jungle is still bundled exclusively for the home screen.
+
+The stone ground is a new full-depth tile inspired by `assets/images/Stone Ground.png`.
+`assets/runtime/stone-ground-deep.png` supplies both its rocky walking ledge and
+the entire visible underside. No flat grey rectangle sits beneath it. Alternating
+mirrored tiles share identical boundary pixels to avoid a hard scrolling seam.
+The visual walking plane is aligned to the same logical ground; the new rock/ice
+obstacles, character poses, physics, jump timing and rewards remain unchanged.
+
+### Stone artwork provenance
+
+Created November 1, 2026 with built-in imagegen, using the original Stone Ground
+image as a reference. Final runtime file: `assets/runtime/stone-ground-deep.png`,
+1254×1254 RGBA. The generated original was preserved and copied into the repo.
+Prompt: improve the original side-scrolling stone surface into a seamless square
+terrain tile; transparent sky above a continuous near-horizontal limestone ledge,
+a narrow pale top plane with tiny moss seams, and connected irregular chunky
+grey/cream/blue-grey rock all the way to the bottom. Include cracks, chips,
+pebbles, darker crevices, varied shading and geological layers; no flat grey
+fill, regular brick grid, scenery, actors, props, labels, borders or bottom edge.
+The output's measured walking plane is approximately source row 570, rendered
+at a 227px offset in each 500px tile. Runtime decode width is capped at 1000px.
+
+The current `ground-*.png` captures show this revision. Earlier comparisons and
+the sections below are historical iterations, not the current gameplay scenery.
+
 ## Biome obstacle follow-up — 1.4.2+10
 
 Ground obstacles now match the current world: jungle cacti, warm canyon rock

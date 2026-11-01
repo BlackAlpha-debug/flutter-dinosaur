@@ -1,5 +1,33 @@
 # Home and first-play review — November 1, 2026
 
+## Full-depth ice follow-up — 1.4.4+12
+
+The owner approved the full-depth stone surface and requested the same for ice.
+The ice trail now uses one connected image for its frozen walking shelf and
+textured underside, with facets, white fractures, bubbles and deeper blue ice.
+The former flat blue fill and short ice strip are no longer rendered or bundled.
+Grass/mud, stone, the home, obstacles, physics and rewards are unchanged.
+
+Final runtime artwork: `assets/runtime/ice-ground-deep.png`, 1254×1254 RGBA,
+created November 1, 2026 with built-in imagegen. The original Ice Ground image
+provided material/style reference; the approved deep stone tile provided only
+composition and depth reference. The generated original was preserved and the
+selected output copied into runtime.
+
+Prompt: square side-scrolling ice terrain tile; transparent upper region and a
+mostly flat frozen shelf with a thin snow/frost cap; continue the same material
+all the way to the bottom as textured cyan/turquoise/blue ice with irregular
+facets, white fractures, air bubbles, crystal striations, cobalt crevices and
+subtle lavender shadows. No plain blue area, regular block grid, rock/mud,
+scenery, actors, text, borders or bottom outline. Matching horizontal edges;
+solid alpha below the ledge, transparency above. Retain the original ice style.
+
+The output's measured walking plane is approximately source row 715. At a
+500px tile size it is placed 285px above the logical ground line. As with stone,
+alternating mirrored repeats avoid a hard edge. Decoding is capped at 1000px;
+both deep terrain textures are prepared when a run starts. The existing ground
+fixture verifies alignment and exports [the inspected ice preview](../screenshots/ground-ice.png).
+
 ## Classic gameplay scenery restored — 1.4.3+11
 
 The owner requested removal of the illustrated gameplay landscapes and confirmed

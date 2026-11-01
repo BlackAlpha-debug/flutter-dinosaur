@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.4.2+10**. Android is the release target; the web build is
+Current app version: **1.4.3+11**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. A debug APK
@@ -32,11 +32,11 @@ this README does not imply that the app is already published.
 
 - **An interactive home:** a sunny jungle scene with your chosen dinosaur,
   a tap-to-hop preview, a prominent Play button, and picture-led destinations.
-- **Three illustrated trails:** a lush jungle, a warm sunset canyon, and a crystal
-  valley, with matching painted grass, sandstone and ice, soft contact shadows,
-  slow scenery movement and short coin-collection sparkles.
-- **Matching obstacles:** jungle cacti, warm sandstone rock blocks in the canyon,
-  and blue upright ice slabs in the crystal valley, with smaller/larger groups.
+- **Three classic trails:** grass and mud, textured stone, and ice, with the
+  original open sky and scrolling ground. The stone ledge and its deep underside
+  share one continuous rocky texture. Collection sparkles and shadows remain.
+- **Matching obstacles:** grassland cacti, warm rock blocks on the stone trail,
+  and blue upright slabs on the ice trail, with smaller/larger groups.
 - **Simple controls:** tap to jump and tap again in the air for a double jump.
 - **Three difficulties:** Easy, Normal, and Hard, each with its own saved best score.
 - **Four dinosaur friends:** preview their running and jumping before choosing one.
@@ -62,7 +62,7 @@ this README does not imply that the app is already published.
   </tr>
   <tr>
     <td><img src="screenshots/menu.png" alt="Little Dino home screen" width="240"></td>
-    <td><img src="screenshots/ground-jungle.png" alt="Sprout running on the jungle's painted grass clearing" width="240"></td>
+    <td><img src="screenshots/ground-jungle.png" alt="Sprout running on the original grass trail" width="240"></td>
     <td><img src="screenshots/shop.png" alt="Dinosaur shop with earned gold prices" width="240"></td>
   </tr>
   <tr>
@@ -80,7 +80,7 @@ this README does not imply that the app is already published.
 <p><img src="screenshots/ptera-wingbeat.png" alt="Eight cartoon pterosaur wing-flapping poses rendered by Flutter" width="640"></p>
 </details>
 
-Interface captures come from the headless browser smoke test; the painted-ground
+Interface captures come from the headless browser smoke test; the ground
 previews and wingbeat sheet are rendered by Flutter widget tests. They illustrate the interface;
 they are not measurements of Android frame rate or physical-device performance.
 
@@ -225,7 +225,8 @@ lib/
   adventure_home.dart       Interactive jungle home and picture navigation
   game_engine.dart          Fixed-step simulation and difficulty rules
   game_scene.dart           Scaled playfield and scenery
-  world_scenery.dart         Illustrated biomes and background movement
+  world_scenery.dart         Original sky, sun/moon, and clouds
+  ground_surface.dart        Scrolling grass, deep stone, and ice terrain
   dino.dart                 Jump, landing, and character state
   dino_animation.dart       Distance-based animation frame selection
   dino_avatar.dart          Cached atlas rendering and color variants

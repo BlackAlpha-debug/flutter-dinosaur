@@ -9,12 +9,13 @@ import 'package:flutter_dinosaur/dino_avatar.dart';
 import 'package:flutter_dinosaur/game_engine.dart';
 import 'package:flutter_dinosaur/game_scene.dart';
 import 'package:flutter_dinosaur/world_scenery.dart';
+import 'package:flutter_dinosaur/ground_surface.dart';
 import 'support/fixed_variant_random.dart';
 
 void main() {
   for (var terrain = 0; terrain < 3; terrain++) {
     testWidgets(
-      '${worldNames[terrain]} uses its painted clearing at the same ground line',
+      '${worldNames[terrain]} keeps its surface aligned to the collision ground',
       (tester) async {
         tester.view.physicalSize = const Size(400, 720);
         tester.view.devicePixelRatio = 1;
@@ -55,11 +56,12 @@ void main() {
         await tester.runAsync(() async {
           final context = tester.element(find.byType(GameScene));
           await Future.wait([
+            precacheImage(GroundSurface.imageFor(terrain), context),
             precacheImage(
               ResizeImage.resizeIfNeeded(
-                1000,
+                184,
                 null,
-                AssetImage(worldArtwork[terrain]),
+                const AssetImage('assets/images/cloud filled.png'),
               ),
               context,
             ),

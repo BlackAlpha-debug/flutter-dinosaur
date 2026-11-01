@@ -7,6 +7,7 @@ import 'dino.dart';
 import 'dino_avatar.dart';
 import 'cactus.dart';
 import 'world_scenery.dart';
+import 'ground_surface.dart';
 
 class GameScene extends StatelessWidget {
   const GameScene({
@@ -58,10 +59,16 @@ class GameScene extends StatelessWidget {
                       children: [
                         Positioned.fill(
                           child: WorldScenery(
-                            terrain: game.terrain,
                             distance: game.distance,
                             skyPhase: game.skyPhase,
                             effects: effects,
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: GroundSurface(
+                            terrain: game.terrain,
+                            distance: game.distance,
+                            groundY: GameEngine.floorY + cameraY,
                           ),
                         ),
                         Positioned(
@@ -92,9 +99,7 @@ class GameScene extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // The illustrated clearing is the surface. Contact
-                        // shadows anchor grounded actors without another belt
-                        // of scenery crossing the painted foreground.
+                        // Contact shadows remain aligned to the restored trail.
                         for (final object in [
                           ...game.obstacles.whereType<Cactus>(),
                           game.dino,

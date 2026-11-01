@@ -1,5 +1,18 @@
 # Asset provenance and runtime use
 
+## Current terrain revision — 1.4.3
+
+Gameplay uses the original grass and ice ground strips and a new full-depth
+stone tile (`assets/runtime/stone-ground-deep.png`), with the original open sky,
+sun/moon and clouds. Stone top and underside are one illustrated rock formation,
+not a textured strip over a flat grey fill. Original reference, selected output,
+prompt and measured placement are documented in HOME_EXPERIENCE.md.
+
+`world-canyon.png` and `world-ice.png` are retained as source history and excluded
+from the APK. `home-jungle.png` remains in the approved home screen. The current
+asset manifest lists runtime images explicitly so unused landscapes are not
+silently bundled. Rock and ice obstacle atlases are unchanged.
+
 Original files are preserved. The Flutter manifest bundles only the runtime
 character, terrain, cloud, small cactus/bird assets, LICENSE and local sounds.
 

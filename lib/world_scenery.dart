@@ -1,68 +1,43 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 
-const worldNames = ['Jungle Trail', 'Sunset Canyon', 'Crystal Valley'];
-const worldArtwork = [
-  'assets/runtime/home-jungle.png',
-  'assets/runtime/world-canyon.png',
-  'assets/runtime/world-ice.png',
-];
+const worldNames = ['Grass Trail', 'Stone Trail', 'Ice Trail'];
 
-/// Slow background drift contrasts with the faster foreground trail. The
-/// overscan avoids seams and never changes the playable world coordinates.
+/// Original open sky, sun/moon and small clouds. Illustrated landscapes are
+/// reserved for the home screen and are not part of the playable scene.
 class WorldScenery extends StatelessWidget {
   const WorldScenery({
     super.key,
-    required this.terrain,
     required this.distance,
     required this.skyPhase,
     required this.effects,
   });
-  final int terrain, skyPhase;
+  final int skyPhase;
   final double distance;
   final bool effects;
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final artwork = SizedBox(
-        key: ValueKey(terrain),
-        width: constraints.maxWidth,
-        height: constraints.maxHeight,
-        child: ClipRect(
-          child: OverflowBox(
-            minWidth: constraints.maxHeight * 4 / 3,
-            maxWidth: constraints.maxHeight * 4 / 3,
-            minHeight: constraints.maxHeight,
-            maxHeight: constraints.maxHeight,
-            child: Transform.translate(
-              offset: Offset(effects ? sin(distance / 140) * 65 : 0, 0),
-              child: Image.asset(
-                worldArtwork[terrain],
-                fit: BoxFit.cover,
-                cacheWidth: 1000,
-                excludeFromSemantics: true,
-              ),
-            ),
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned(
+        right: 38,
+        top: 65,
+        child: Icon(
+          skyPhase >= 3 ? Icons.nightlight_round : Icons.wb_sunny_rounded,
+          size: 55,
+          color: const Color(0xFFFFE9A8),
+        ),
+      ),
+      for (var i = 0; i < 4; i++)
+        Positioned(
+          left: ((i * 150 + 70 - (effects ? distance * 1.5 : 0)) % 600) - 100,
+          top: 100.0 + (i % 2) * 55,
+          child: Image.asset(
+            'assets/images/cloud filled.png',
+            width: 92,
+            height: 45,
+            cacheWidth: 184,
+            excludeFromSemantics: true,
           ),
         ),
-      );
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          AnimatedSwitcher(
-            duration: effects
-                ? const Duration(milliseconds: 650)
-                : Duration.zero,
-            child: artwork,
-          ),
-          if (skyPhase >= 2)
-            ColoredBox(
-              color: const Color(
-                0xFF28214B,
-              ).withValues(alpha: (skyPhase - 1) * .10),
-            ),
-        ],
-      );
-    },
+    ],
   );
 }

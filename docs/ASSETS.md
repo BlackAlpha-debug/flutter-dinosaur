@@ -40,6 +40,11 @@ The jungle image is shared across home and gameplay. Prompts, references and
 the design review are in [HOME_EXPERIENCE.md](HOME_EXPERIENCE.md). Runtime decode
 is capped at 1000px wide; no external image service is used by the app.
 
+Since 1.4.1, these paintings also provide the playable ground surface. The former
+`Grass Ground.png`, `Stone Ground.png` and `Ice Ground.png` scrolling overlays
+are preserved as source history but are no longer bundled or rendered by the
+current game. Contact shadows are standard Flutter decoration effects.
+
 ## Weekly gift artwork
 
 The weekly gift treasure chest is original vector artwork drawn by

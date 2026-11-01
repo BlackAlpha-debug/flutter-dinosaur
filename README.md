@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.4.0+8**. Android is the release target; the web build is
+Current app version: **1.4.1+9**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. A debug APK
@@ -33,7 +33,8 @@ this README does not imply that the app is already published.
 - **An interactive home:** a sunny jungle scene with your chosen dinosaur,
   a tap-to-hop preview, a prominent Play button, and picture-led destinations.
 - **Three illustrated trails:** a lush jungle, a warm sunset canyon, and a crystal
-  valley, with slow scenery movement and short coin-collection sparkles.
+  valley, with matching painted grass, sandstone and ice, soft contact shadows,
+  slow scenery movement and short coin-collection sparkles.
 - **Simple controls:** tap to jump and tap again in the air for a double jump.
 - **Three difficulties:** Easy, Normal, and Hard, each with its own saved best score.
 - **Four dinosaur friends:** preview their running and jumping before choosing one.
@@ -59,7 +60,7 @@ this README does not imply that the app is already published.
   </tr>
   <tr>
     <td><img src="screenshots/menu.png" alt="Little Dino home screen" width="240"></td>
-    <td><img src="screenshots/gameplay.png" alt="Sprout running through a grassy landscape" width="240"></td>
+    <td><img src="screenshots/ground-jungle.png" alt="Sprout running on the jungle's painted grass clearing" width="240"></td>
     <td><img src="screenshots/shop.png" alt="Dinosaur shop with earned gold prices" width="240"></td>
   </tr>
   <tr>
@@ -77,8 +78,8 @@ this README does not imply that the app is already published.
 <p><img src="screenshots/ptera-wingbeat.png" alt="Eight cartoon pterosaur wing-flapping poses rendered by Flutter" width="640"></p>
 </details>
 
-Interface captures come from the headless browser smoke test; the wingbeat sheet
-is rendered by a Flutter widget test. They illustrate the interface;
+Interface captures come from the headless browser smoke test; the painted-ground
+previews and wingbeat sheet are rendered by Flutter widget tests. They illustrate the interface;
 they are not measurements of Android frame rate or physical-device performance.
 
 ## How to play

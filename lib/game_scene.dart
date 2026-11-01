@@ -5,6 +5,7 @@ import 'game_engine.dart';
 import 'rain.dart';
 import 'dino.dart';
 import 'dino_avatar.dart';
+import 'cactus.dart';
 import 'world_scenery.dart';
 
 class GameScene extends StatelessWidget {
@@ -91,24 +92,50 @@ class GameScene extends StatelessWidget {
                             ),
                           ),
                         ),
-                        for (var i = 0; i < 2; i++)
+                        // The illustrated clearing is the surface. Contact
+                        // shadows anchor grounded actors without another belt
+                        // of scenery crossing the painted foreground.
+                        for (final object in [
+                          ...game.obstacles.whereType<Cactus>(),
+                          game.dino,
+                        ])
                           Positioned(
                             left:
-                                i * 500 -
-                                (game.distance * worlToPixelRatio % 500),
-                            top:
-                                GameEngine.floorY -
-                                [425.0, 460.0, 455.0][game.terrain] +
-                                cameraY,
-                            width: 500,
-                            height: 500,
-                            child: Image.asset(
-                              [
-                                'assets/images/Grass Ground.png',
-                                'assets/images/Stone Ground.png',
-                                'assets/images/Ice Ground.png',
-                              ][game.terrain],
-                              filterQuality: FilterQuality.low,
+                                object
+                                    .getRect(GameEngine.viewport, game.distance)
+                                    .center
+                                    .dx -
+                                object
+                                        .getRect(
+                                          GameEngine.viewport,
+                                          game.distance,
+                                        )
+                                        .width *
+                                    .30,
+                            top: GameEngine.floorY + cameraY - 3,
+                            width:
+                                object
+                                    .getRect(GameEngine.viewport, game.distance)
+                                    .width *
+                                .60,
+                            height: 7,
+                            child: Opacity(
+                              opacity: object == game.dino
+                                  ? (1 - game.dino.dispY / 450).clamp(.15, 1.0)
+                                  : 1,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: _shadowColor(game.terrain),
+                                  borderRadius: BorderRadius.circular(50),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: _shadowColor(game.terrain),
+                                      blurRadius: 5,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         for (final star in game.coins)
@@ -217,4 +244,10 @@ class GameScene extends StatelessWidget {
       },
     );
   }
+
+  Color _shadowColor(int terrain) => [
+    const Color(0x28334E21),
+    const Color(0x286B3B28),
+    const Color(0x28404B83),
+  ][terrain];
 }

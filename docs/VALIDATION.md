@@ -1,5 +1,32 @@
 # Validation record
 
+## November 1, 2026 — world-matched rock and ice obstacles (1.4.2+10)
+
+- Jungle keeps its cacti; canyon uses warm sandstone blocks; crystal valley
+  uses upright blue ice slabs, including three-piece groups of differing heights.
+  The six original obstacle dimensions, forgiving hitboxes, jump/spawn timing and
+  rewards are unchanged. Already-queued obstacles use the current world's skin.
+- Two original generated atlases were inspected, with measured source bounds
+  fitted into the existing rectangles. Later-world images are prepared at run
+  start. Source prompts, references, selection and runtime paths are recorded
+  in HOME_EXPERIENCE.md. Old scrolling ground overlays remain removed.
+- Analysis and formatting clean; all 65 tests passed. Two new checks cover queued
+  skin changes and all six sizes across all three worlds. Existing dinosaur/
+  bird atlas, layout, lifecycle, economy and persistence checks pass with the
+  shared renderer extension. Five targeted fixture/render checks also passed.
+- Actual Flutter captures of all 18 obstacle appearances and all three playfields
+  were inspected: `biome-obstacles.png` and `ground-*.png` under screenshots.
+  Captures use deterministic test actors/coins and real fonts/icons; they do not
+  alter production progress or add a debug mode.
+- Android debug build, native compatibility and official 16 KB zipalign passed.
+  ZIP inspection confirms both obstacle atlases are bundled and the three legacy
+  ground-strip images are absent. Update installation on the connected phone
+  succeeded; package metadata confirms 1.4.2 / versionCode 10, minimum API 24 and
+  target API 36. Installation did not clear app data. Physical frame pacing and
+  long-session play remain manual checks.
+- Feature commit: `165f70c`. README references resolve. Gradle was stopped;
+  Android Studio/emulator were not used.
+
 ## November 1, 2026 — painted ground surfaces (1.4.1+9)
 
 - Removed the three scrolling ground overlays from rendering and bundling. The

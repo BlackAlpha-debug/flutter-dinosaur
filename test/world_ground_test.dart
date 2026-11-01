@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_dinosaur/dino_avatar.dart';
 import 'package:flutter_dinosaur/game_engine.dart';
 import 'package:flutter_dinosaur/game_scene.dart';
 import 'package:flutter_dinosaur/world_scenery.dart';
+import 'support/fixed_variant_random.dart';
 
 void main() {
   for (var terrain = 0; terrain < 3; terrain++) {
@@ -24,7 +24,7 @@ void main() {
         game.distance = terrain * 500 + 30;
         final cactus = Cactus(
           worldLocation: Offset(game.distance + 27, 0),
-          random: Random(3),
+          random: FixedVariantRandom(0),
         );
         game.obstacles.add(cactus);
         for (var i = 0; i < 3; i++) {
@@ -72,6 +72,15 @@ void main() {
               context,
             ),
             precacheImage(AssetImage(cactus.sprite.imagePath), context),
+            if (terrain > 0)
+              precacheImage(
+                ResizeImage.resizeIfNeeded(
+                  1536,
+                  null,
+                  AssetImage(GroundObstacleAvatar.assets[terrain - 1]),
+                ),
+                context,
+              ),
           ]);
         });
         await tester.pumpAndSettle();

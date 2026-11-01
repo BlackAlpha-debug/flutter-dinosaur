@@ -76,3 +76,29 @@ landscapes; originals retained in the tool output folder and copied into runtime
 The three outputs were inspected before use. Background decode width is capped
 at 1000px and shared between home/game for the jungle asset. The home hop uses
 the existing poses, with no independent perpetual animation loop.
+
+## Inspected result
+
+1. **Home — working, clearer task entry.** [Current home](../screenshots/home-audit/03-home-after.png),
+   [comparison](../screenshots/home-audit/home-comparison.png).
+   The selected character stands in an illustrated clearing and responds to a
+   tap with the real jump/landing poses. Play is larger and higher in the screen.
+   Shop/collection use character pictures, gifts use the chest, and settings and
+   grown-ups actions remain visible. Hop and all six destinations passed action
+   checks; the custom cards expose named screen-reader tap actions. Large text
+   reflows/scrolls rather than clipping controls. This improves hierarchy; it
+   does not establish that children prefer it.
+2. **First play — working, more visual depth.** [Current playfield](../screenshots/home-audit/04-first-play-after.png),
+   [comparison](../screenshots/home-audit/play-comparison.png).
+   Illustrated scenery replaces the flat background/underground. The trail,
+   coins and character stay distinct in the inspected frame. Slow background
+   drift and short collection sparkles are decorative, disabled with reduced
+   effects/motion. Jump, pause, results and the existing economy flows passed.
+   Device frame pacing, long sessions and actual child comprehension/enjoyment
+   still need play-testing; screenshots cannot establish those outcomes.
+
+Fresh baseline/current screenshots and the exact side-by-side comparison
+captures were opened and inspected before acceptance. Automated checks comprise
+60 passing tests, clean analysis, and a headless browser flow with no external
+requests, JavaScript errors or failed HTTP responses. The browser includes the
+new home hop as well as shop, previews, gifts, privacy and persistence.

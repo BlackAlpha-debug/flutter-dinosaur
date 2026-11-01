@@ -74,6 +74,10 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await play.waitFor();
     await page.waitForTimeout(1500);
     await page.screenshot({ path: path.join(output, 'menu.png') });
+    await page.getByRole('button', { name: 'Try a hop with Sprout', exact: true }).click();
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: path.join(output, 'home-hop.png') });
+    await page.waitForTimeout(650);
     stage = 'gameplay';
     await play.click();
     await page.waitForTimeout(750);
@@ -188,6 +192,7 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.screenshot({ path: path.join(output, 'small-screen.png') });
     const result = { errors, externalRequests: [...external], animationChecks, checks: [
       'menu', 'start', 'gameplay', 'pause', 'settings', 'resume', 'collision/results',
+      'interactive home hop',
       'home', 'complete bundled privacy policy/contact',
       'stored best-score persistence after page reload', 'small screen' ],
       savedBestScore: saved.best_easy, shopFixtureStartingGold: 1200,

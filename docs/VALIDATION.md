@@ -1,5 +1,41 @@
 # Validation record
 
+## November 1, 2026 — interactive home and illustrated playfields (1.4.0+8)
+
+- Captured and inspected the current home/first-play flow before editing. The
+  numbered review, research sources, art prompts, scope and evidence limits are
+  in HOME_EXPERIENCE.md. Exact before/after comparison captures were inspected
+  at matching 390×844 browser dimensions.
+- Home now has a selected-character jungle stage, tap-to-hop interaction, larger
+  Play action, picture-based shop/collection cards and a treasure destination.
+  Custom cards expose named screen-reader tap actions. No perpetual home ticker
+  is introduced; reduced effects/device animation settings suppress the hop.
+- Gameplay now uses three original illustrated backdrops, slow background drift,
+  bounded scenery crossfades, world names and brief coin sparkles. Camera shifts
+  ground, collectibles and actors together; physics, difficulty, spawning,
+  character prices and coin/gift amounts are unchanged. Flat underground fill
+  is replaced by the illustrated foreground.
+- Format checks and analysis clean. All 60 tests passed. Three new tests verify
+  the home hop and all six destinations, accessible card actions, reduced motion,
+  and simulation-timed pickup feedback. Existing small/large-text phone/tablet,
+  animation, storage, shop, gift and game regressions pass.
+- Web build and full headless browser smoke flow passed with zero external
+  requests, JavaScript errors or failed HTTP responses. The flow now includes
+  the home hop, plus the four character previews and all prior economy/privacy/
+  persistence checks. Home, hop, first play and both comparison captures were
+  opened and inspected. All 31 local README references resolve.
+- Android debug build passed, with all three scenery assets confirmed bundled.
+  Native compatibility and official 16 KB zipalign checks passed. Update install
+  on the connected phone succeeded, preserving app data; package metadata confirms
+  1.4.0 / versionCode 8, minimum API 24 and target API 36. The phone was locked
+  during the attempted screen check; that capture was rejected and removed.
+  Native layout/feel and frame pacing therefore remain unverified at this point.
+- Art/review commit: `00cf860`. Implementation commit: `c168fd4`. Gradle and
+  the local preview server were stopped. Android Studio/emulator were not used.
+- These checks validate implementation and visible layout, not children's
+  enjoyment or retention. Short supervised play sessions with ages 6–8 and
+  parents remain the next evidence needed for those outcomes.
+
 ## November 1, 2026 — cartoon flying obstacle and simpler results (1.3.1+7)
 
 - Removed the pickup/multiplier calculation from pause/results; final score,

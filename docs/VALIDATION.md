@@ -1,5 +1,39 @@
 # Validation record
 
+## November 3, 2026 — simple character home (1.5.0+13)
+
+- Owner selected “Simple, cute character screen.” Replaced the illustrated
+  jungle panel and large navigation cards with one larger dinosaur, a soft
+  pastel circle, centered title/name, prominent Play and compact secondary
+  shortcuts. Existing home hop, all six destinations and save-error recovery
+  remain. Details and evidence limits are in HOME_SIMPLE_REDESIGN.md.
+- Gameplay, full-depth terrain, obstacle skins, shop/gift amounts and the local
+  save format are unchanged. The unused jungle home image is no longer bundled;
+  no new bitmap or dependency was added.
+- All 65 tests pass; analysis and formatting clean. Tests cover home actions and
+  accessible names, device reduced motion, large text/narrow screens, and the
+  existing game/economy/lifecycle regressions.
+- Web build passed. Full browser flow passed with zero external requests,
+  JavaScript errors or failed HTTP responses. Sprout and equipped Bramble homes,
+  the hop, and a 320×568 window were visually inspected. The Back helper now
+  dispatches the accessible action to avoid stale outgoing Flutter web nodes;
+  app navigation did not change. Current captures are in screenshots/home-simple/.
+- Android debug build, native compatibility and official 16 KB zipalign passed.
+  Metadata confirms 1.5.0 / versionCode 13, minimum API 24 and target API 36.
+  ZIP checks confirm all three landscape paintings are absent while terrain
+  and obstacle assets remain. The phone is disconnected, so this revision has
+  not been installed or physically play-tested in this run.
+- Published [v1.5.0-preview.1](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.5.0-preview.1)
+  under authenticated account BlackAlpha-debug. APK size: 168,272,046 bytes.
+  Local and GitHub SHA-256 agree:
+  `b85da8a3daf0af524844ee05144b6ff89c0b014d73109a1a98c63210e5c95c5e`.
+  Anonymous release/APK/checksum URLs returned HTTP 200; the download reports
+  the expected Content-Length. The release is clearly marked as a debug-signed
+  preview, not a Play Store build.
+- Implementation/tag source: `cbf5062a67e641c29d5d0fb28e9c50f2660b64c5`.
+  README/release download links and local references were checked. Gradle and
+  the local preview server were stopped. Android Studio/emulator were not used.
+
 ## November 1, 2026 — downloadable APK and connected-phone update
 
 - Installed the exact verified 1.4.4 APK on the connected phone using an in-place

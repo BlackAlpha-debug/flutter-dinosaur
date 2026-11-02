@@ -48,3 +48,7 @@ children's enjoyment. Play-testing with children and parents remains necessary.
   before waiting for route transition; this avoids stale outgoing Flutter web
   semantics during pointer hit-test retries. App navigation behavior was not
   changed to work around the test.
+- Android 1.5.0 / build 13 passed build, native packaging and 16 KB alignment
+  checks. The old landscape images are excluded from the APK. The debug-signed
+  preview is available on [GitHub Releases](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.5.0-preview.1).
+  The phone was disconnected, so native visual/feel testing is still pending.

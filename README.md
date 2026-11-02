@@ -24,7 +24,7 @@ Current app version: **1.5.0+13**. Android is the release target; the web build 
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. The latest
-test APK is available from [GitHub Releases](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.4.4-preview.1).
+test APK is available from [GitHub Releases](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.5.0-preview.1).
 A signed store release still needs publisher configuration and physical-device testing;
 this README does not imply that the app is already published.
 
@@ -129,17 +129,18 @@ separate from the gift track and does not change reward amounts.
 
 ## Download Android APK
 
-**[Download Little Dino 1.4.4 APK](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.4.4-preview.1/little-dino-1.4.4-preview.apk)**
+**[Download Little Dino 1.5.0 APK](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.5.0-preview.1/little-dino-1.5.0-preview.apk)**
 
 For **Android 7.0 and later**. Open the downloaded APK on your phone and follow
 Android's installation prompts. This is a **debug-signed test build**, not the
 Google Play production release.
 
-[Release notes](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.4.4-preview.1)
-· [SHA-256 checksum](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.4.4-preview.1/little-dino-1.4.4-preview.apk.sha256)
+[Release notes](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.5.0-preview.1)
+· [SHA-256 checksum](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.5.0-preview.1/little-dino-1.5.0-preview.apk.sha256)
 
-The release contains the same version **1.4.4 / build 12** tested on the connected
-Android phone. Workflow artifacts remain available as an alternative for developers.
+The release contains version **1.5.0 / build 13**, verified with automated tests,
+browser flows and Android packaging checks. Physical-device play testing of this
+revision is pending. Workflow artifacts remain an alternative for developers.
 
 ## Getting started
 

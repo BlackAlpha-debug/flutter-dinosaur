@@ -10,16 +10,16 @@ them. A debug APK is for testing only. No Android Studio/emulator is required.
 
 ## Downloadable Android test build
 
-The current public preview is [v1.4.4-preview.1](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.4.4-preview.1):
+The current public preview is [v1.5.0-preview.1](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/tag/v1.5.0-preview.1):
 
-- [APK download](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.4.4-preview.1/little-dino-1.4.4-preview.apk)
-- [SHA-256 file](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.4.4-preview.1/little-dino-1.4.4-preview.apk.sha256)
-- Version 1.4.4, Android version code 12; Android 7.0/API 24 minimum.
+- [APK download](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.5.0-preview.1/little-dino-1.5.0-preview.apk)
+- [SHA-256 file](https://github.com/BlackAlpha-debug/flutter-dinosaur/releases/download/v1.5.0-preview.1/little-dino-1.5.0-preview.apk.sha256)
+- Version 1.5.0, Android version code 13; Android 7.0/API 24 minimum.
 - Debug-signed test build, separate from the signed Play Store release below.
 
-APK SHA-256: `e249759cd6527afb1dcdc7d8357ba77630d5196198515a6de6695174842318ab`.
-The exact file was installed successfully on the connected phone. It is hosted
-as a GitHub Release asset, so downloading does not depend on a workflow artifact's
+APK SHA-256: `b85da8a3daf0af524844ee05144b6ff89c0b014d73109a1a98c63210e5c95c5e`.
+Physical-device play testing of this revision is pending. It is hosted as a
+GitHub Release asset, so downloading does not depend on a workflow artifact's
 14-day retention period. Source, store identity and signing prerequisites remain
 documented below.
 

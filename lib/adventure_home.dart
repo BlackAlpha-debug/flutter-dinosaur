@@ -5,9 +5,9 @@ import 'dino_catalog.dart';
 import 'dino_shop_page.dart';
 import 'game_engine.dart';
 import 'player_progress.dart';
-import 'treasure_chest.dart';
 
-const _ink = Color(0xFF173C35);
+const _ink = Color(0xFF214E3E);
+const _paper = Color(0xFFFFFAF2);
 
 class AdventureHome extends StatelessWidget {
   const AdventureHome({
@@ -31,282 +31,335 @@ class AdventureHome extends StatelessWidget {
       onGrownUps;
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              runSpacing: 8,
-              spacing: 12,
+  Widget build(BuildContext context) {
+    final character = characterById(progress.selectedDino);
+    final motion = progress.effects && !MediaQuery.disableAnimationsOf(context);
+    return ColoredBox(
+      color: _paper,
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Little Dino',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -1,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 9,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFE8A8),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.monetization_on_rounded,
-                        color: Color(0xFF805410),
-                        size: 22,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Semantics(
+                    label: 'Gold ${formatGold(progress.coins)}',
+                    excludeSemantics: true,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
                       ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          'Gold ${formatGold(progress.coins)}',
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEFC7),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            _AdventureStage(
-              characterId: progress.selectedDino,
-              color: progress.color,
-              effects: progress.effects,
-            ),
-            if (progress.effects &&
-                !MediaQuery.disableAnimationsOf(context)) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Tap ${characterById(progress.selectedDino).name} to hop!',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF287350),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 64),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                textStyle: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              onPressed: onPlay,
-              icon: const Icon(Icons.play_arrow_rounded, size: 34),
-              label: Text(
-                'Play · ${difficulty.label}',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Tap to jump. Tap again to jump higher!',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, height: 1.4),
-            ),
-            if (progress.storageError) ...[
-              const SizedBox(height: 12),
-              const Text(
-                'Progress could not be saved on this device. You can still play.',
-                textAlign: TextAlign.center,
-              ),
-              TextButton(
-                onPressed: progress.retrySave,
-                child: const Text('Try saving again'),
-              ),
-            ],
-            const SizedBox(height: 18),
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: _PictureDestination(
-                      title: 'Dino Shop',
-                      subtitle: 'Meet new friends',
-                      characterId: 'bramble',
-                      background: const Color(0xFFE3F0E6),
-                      onTap: onShop,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.monetization_on_rounded,
+                            size: 19,
+                            color: Color(0xFF8A651E),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              formatGold(progress.coins),
+                              style: const TextStyle(
+                                color: Color(0xFF795716),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _PictureDestination(
-                      title: 'My Dinosaurs',
-                      subtitle:
-                          '${dinoCatalog.where((dino) => progress.owns(dino.id)).length} of 4 friends',
-                      characterId: progress.selectedDino,
-                      background: const Color(0xFFEAE6F7),
-                      onTap: onCollection,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Little Dino',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _ink,
+                    fontSize: 44,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -1.6,
+                    height: 1.1,
+                  ),
+                ),
+                _CharacterStage(
+                  characterId: character.id,
+                  color: progress.color,
+                  effects: progress.effects,
+                ),
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF1E3),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      character.name,
+                      style: const TextStyle(
+                        color: _ink,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+                if (motion) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'Tap ${character.name} to hop!',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF557564),
+                      fontSize: 12,
                     ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Semantics(
-              button: true,
-              onTap: onGifts,
-              label: progress.giftAvailable
-                  ? 'Weekly Gifts · Gift ready'
-                  : 'Weekly Gifts',
-              excludeSemantics: true,
-              child: Material(
-                color: const Color(0xFFFFEDC4),
-                borderRadius: BorderRadius.circular(22),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: onGifts,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+                const SizedBox(height: 20),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(26),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _ink.withValues(alpha: .16),
+                        offset: const Offset(0, 5),
+                        blurRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF28694F),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 66),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 22,
+                        vertical: 15,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        const TreasureChest(
-                          opened: false,
-                          animate: false,
-                          size: 64,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Weekly Gifts',
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                progress.giftAvailable
-                                    ? 'Your treasure is ready!'
-                                    : 'See your treasure trail',
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(Icons.chevron_right_rounded, color: _ink),
-                      ],
+                    onPressed: onPlay,
+                    icon: const Icon(Icons.play_arrow_rounded, size: 34),
+                    label: Text(
+                      'Play · ${difficulty.label}',
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              children: [
-                TextButton.icon(
-                  onPressed: onSettings,
-                  icon: const Icon(Icons.tune_rounded, size: 20),
-                  label: const Text('Settings'),
+                const SizedBox(height: 12),
+                const Text(
+                  'Tap to jump. Tap again to jump higher!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF557564),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
                 ),
-                TextButton.icon(
-                  onPressed: onGrownUps,
-                  icon: const Icon(Icons.family_restroom_rounded, size: 20),
-                  label: const Text('For grown-ups'),
+                if (progress.storageError) ...[
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Progress could not be saved on this device. You can still play.',
+                    textAlign: TextAlign.center,
+                  ),
+                  TextButton(
+                    onPressed: progress.retrySave,
+                    child: const Text('Try saving again'),
+                  ),
+                ],
+                const SizedBox(height: 26),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stacked =
+                        constraints.maxWidth < 280 ||
+                        MediaQuery.textScalerOf(context).scale(14) > 21;
+                    final shortcuts = [
+                      _HomeShortcut(
+                        label: 'Dino Shop',
+                        icon: Icons.storefront_rounded,
+                        color: const Color(0xFF8B681F),
+                        background: const Color(0xFFFFEFC8),
+                        stacked: stacked,
+                        onTap: onShop,
+                      ),
+                      _HomeShortcut(
+                        label: 'My Dinosaurs',
+                        icon: Icons.pets_rounded,
+                        color: const Color(0xFF7862A6),
+                        background: const Color(0xFFEDE7F9),
+                        stacked: stacked,
+                        onTap: onCollection,
+                      ),
+                      _HomeShortcut(
+                        label: 'Weekly Gifts',
+                        semanticLabel: progress.giftAvailable
+                            ? 'Weekly Gifts · Gift ready'
+                            : 'Weekly Gifts',
+                        icon: Icons.card_giftcard_rounded,
+                        color: const Color(0xFFAC6255),
+                        background: const Color(0xFFFFE5DD),
+                        ready: progress.giftAvailable,
+                        stacked: stacked,
+                        onTap: onGifts,
+                      ),
+                    ];
+                    if (stacked) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: shortcuts,
+                      );
+                    }
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final shortcut in shortcuts)
+                          Expanded(child: shortcut),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  children: [
+                    TextButton.icon(
+                      onPressed: onSettings,
+                      icon: const Icon(Icons.tune_rounded, size: 18),
+                      label: const Text('Settings'),
+                    ),
+                    TextButton.icon(
+                      onPressed: onGrownUps,
+                      icon: const Icon(Icons.family_restroom_rounded, size: 18),
+                      label: const Text('For grown-ups'),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _PictureDestination extends StatelessWidget {
-  const _PictureDestination({
-    required this.title,
-    required this.subtitle,
-    required this.characterId,
-    required this.background,
-    required this.onTap,
-  });
-  final String title, subtitle, characterId;
-  final Color background;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    onTap: onTap,
-    label: title,
-    excludeSemantics: true,
-    child: Material(
-      color: background,
-      borderRadius: BorderRadius.circular(22),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 66,
-                child: DinoAvatar(characterId: characterId, effects: false),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-class _AdventureStage extends StatefulWidget {
-  const _AdventureStage({
+class _HomeShortcut extends StatelessWidget {
+  const _HomeShortcut({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.background,
+    required this.stacked,
+    required this.onTap,
+    this.semanticLabel,
+    this.ready = false,
+  });
+  final String label;
+  final String? semanticLabel;
+  final IconData icon;
+  final Color color, background;
+  final bool ready, stacked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final picture = SizedBox.square(
+      dimension: stacked ? 52 : 60,
+      child: Stack(
+        clipBehavior: Clip.none,
+        fit: StackFit.expand,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: background,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(icon, size: 29, color: color),
+          ),
+          if (ready)
+            Positioned(
+              top: -2,
+              right: -2,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8B44A),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: _paper, width: 2),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+    final title = Text(
+      label,
+      textAlign: stacked ? TextAlign.start : TextAlign.center,
+      style: const TextStyle(
+        color: _ink,
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+      ),
+    );
+    return Semantics(
+      button: true,
+      onTap: onTap,
+      label: semanticLabel ?? label,
+      excludeSemantics: true,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(22),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+            child: stacked
+                ? Row(
+                    children: [
+                      picture,
+                      const SizedBox(width: 16),
+                      Expanded(child: title),
+                      const Icon(Icons.chevron_right_rounded, color: _ink),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [picture, const SizedBox(height: 10), title],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CharacterStage extends StatefulWidget {
+  const _CharacterStage({
     required this.characterId,
     required this.color,
     required this.effects,
@@ -315,10 +368,10 @@ class _AdventureStage extends StatefulWidget {
   final int color;
   final bool effects;
   @override
-  State<_AdventureStage> createState() => _AdventureStageState();
+  State<_CharacterStage> createState() => _CharacterStageState();
 }
 
-class _AdventureStageState extends State<_AdventureStage>
+class _CharacterStageState extends State<_CharacterStage>
     with SingleTickerProviderStateMixin {
   late final _hop = AnimationController(
     vsync: this,
@@ -344,95 +397,86 @@ class _AdventureStageState extends State<_AdventureStage>
   @override
   Widget build(BuildContext context) {
     final character = characterById(widget.characterId);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final stageHeight = (constraints.maxWidth / 1.3).clamp(240.0, 340.0);
-          final height =
-              stageHeight +
-              max(0, MediaQuery.textScalerOf(context).scale(19) - 19) * 4;
-          return SizedBox(
-            height: height,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  'assets/runtime/home-jungle.png',
-                  fit: BoxFit.cover,
-                  cacheWidth: 1000,
-                  excludeFromSemantics: true,
-                ),
-                Positioned(
-                  left: 16,
-                  top: 16,
-                  right: 16,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF9EC).withValues(alpha: .96),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 9,
-                        ),
-                        child: Text(
-                          'Let’s explore with ${character.name}!',
-                          style: const TextStyle(
-                            color: _ink,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = min(238.0, constraints.maxWidth * .76);
+        return SizedBox(
+          height: size + 44,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Center(
+                  child: Container(
+                    width: size * .94,
+                    height: size * .94,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [Color(0xFFFFF0C9), Color(0xFFF0F3DF)],
                       ),
                     ),
                   ),
                 ),
-                Positioned(
-                  left: constraints.maxWidth * .17,
-                  bottom: stageHeight * .10,
-                  width: stageHeight * .66,
-                  height: stageHeight * .66,
-                  child: Semantics(
-                    button: _motion,
-                    label: 'Try a hop with ${character.name}',
-                    excludeSemantics: true,
+              ),
+              Positioned(
+                bottom: 7,
+                left: (constraints.maxWidth - size * .5) / 2,
+                width: size * .5,
+                height: 9,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: _ink.withValues(alpha: .08),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _ink.withValues(alpha: .08),
+                        blurRadius: 12,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                left: (constraints.maxWidth - size) / 2,
+                width: size,
+                height: size,
+                child: Semantics(
+                  button: _motion,
+                  label: 'Try a hop with ${character.name}',
+                  excludeSemantics: true,
+                  onTap: _motion ? _tryHop : null,
+                  child: GestureDetector(
                     onTap: _motion ? _tryHop : null,
-                    child: GestureDetector(
-                      onTap: _motion ? _tryHop : null,
-                      child: AnimatedBuilder(
-                        animation: _hop,
-                        builder: (context, _) {
-                          final inAir = _motion && _jumping && _hop.value < .85;
-                          final landing = _motion && _jumping && !inAir;
-                          final lift = inAir
-                              ? sin(_hop.value / .85 * pi) * 34
-                              : 0.0;
-                          return Transform.translate(
-                            offset: Offset(0, -lift),
-                            child: DinoAvatar(
-                              characterId: character.id,
-                              color: widget.color,
-                              running: true,
-                              distance: 3.34,
-                              jumping: inAir,
-                              landing: landing,
-                              effects: widget.effects,
-                            ),
-                          );
-                        },
-                      ),
+                    child: AnimatedBuilder(
+                      animation: _hop,
+                      builder: (context, _) {
+                        final inAir = _motion && _jumping && _hop.value < .85;
+                        final landing = _motion && _jumping && !inAir;
+                        return Transform.translate(
+                          offset: Offset(
+                            0,
+                            inAir ? -sin(_hop.value / .85 * pi) * 36 : 0,
+                          ),
+                          child: DinoAvatar(
+                            characterId: character.id,
+                            color: widget.color,
+                            running: true,
+                            distance: 3.34,
+                            jumping: inAir,
+                            landing: landing,
+                            effects: widget.effects,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

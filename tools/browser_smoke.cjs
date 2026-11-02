@@ -26,6 +26,14 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
       }
       throw new Error('Could not scroll to button: ' + name);
     }
+    async function goBack() {
+      const back = page.getByRole('button', { name: 'Back', exact: true });
+      await back.waitFor({ state: 'visible' });
+      // Dispatch the accessibility action directly: outgoing Flutter route
+      // nodes can detach while Playwright is doing pointer hit-test retries.
+      await back.evaluate(element => element.click());
+      await page.waitForTimeout(400);
+    }
     async function enableSemantics() {
       const node = page.locator('flt-semantics-placeholder');
       if (await node.count()) await node.evaluate(element => element.click());
@@ -112,7 +120,7 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.getByRole('button', { name: 'Back', exact: true }).waitFor();
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'privacy.png') });
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await goBack();
     await page.getByRole('button', { name: 'Done', exact: true }).click();
     stage = 'reload';
     await page.reload({ waitUntil: 'networkidle' });
@@ -141,7 +149,7 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.screenshot({ path: path.join(output, 'shop.png') });
     await tapScrolling('Preview Sprout');
     await checkAnimation('Sprout');
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await goBack();
     await tapScrolling('Preview Bramble');
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'dino-preview.png') });
@@ -149,15 +157,15 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await tapScrolling('Buy for 1,000 gold');
     await page.getByRole('button', { name: 'Buy and use', exact: true }).click();
     await page.getByRole('button', { name: 'Equipped', exact: true }).waitFor();
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await goBack();
     for (const name of ['Sunny', 'Nova']) {
       await tapScrolling('Preview ' + name);
       await page.waitForTimeout(500);
       await page.screenshot({ path: path.join(output, name.toLowerCase() + '-preview.png') });
       await checkAnimation(name);
-      await page.getByRole('button', { name: 'Back', exact: true }).click();
+      await goBack();
     }
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await goBack();
     stage = 'gifts';
     await tapScrolling(/Weekly Gifts/);
     await page.waitForTimeout(500);
@@ -171,12 +179,12 @@ const { chromium } = require(path.join(__dirname, '..', 'build', 'browser-qa', '
     await page.mouse.wheel(0, -6000);
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(output, 'weekly-gifts-claimed.png') });
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await goBack();
     await tapScrolling('My Dinosaurs');
     await tapScrolling('Preview Bramble');
     await page.getByRole('button', { name: 'Equipped', exact: true }).waitFor();
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await goBack();
+    await goBack();
     await page.reload({ waitUntil: 'networkidle' }); await enableSemantics();
     let finalProgress = await page.evaluate(() => Object.entries(localStorage)
       .find(([key]) => key.includes('little_dino.progress.v1'))[1]);

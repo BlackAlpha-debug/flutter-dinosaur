@@ -1,5 +1,12 @@
 # Asset provenance and runtime use
 
+## Simple home revision — 1.5.0
+
+The home now uses the existing character sprites against native pastel UI
+decoration. `home-jungle.png` is retained as source history but no longer bundled
+or rendered. Gameplay terrain and obstacle assets are unchanged. No new generated
+bitmap is needed for this home revision; see HOME_SIMPLE_REDESIGN.md.
+
 ## Current terrain revision — 1.4.4
 
 Gameplay uses the original grass/mud and full-depth stone/ice tiles
@@ -9,8 +16,8 @@ surface through the entire visible underside. Original references, selected
 outputs, prompts and measured placement are documented in HOME_EXPERIENCE.md.
 The inherited short ice strip remains as source history and is no longer bundled.
 
-`world-canyon.png` and `world-ice.png` are retained as source history and excluded
-from the APK. `home-jungle.png` remains in the approved home screen. The current
+`world-canyon.png`, `world-ice.png` and `home-jungle.png` are retained as source
+history and excluded from the APK. The current
 asset manifest lists runtime images explicitly so unused landscapes are not
 silently bundled. Rock and ice obstacle atlases are unchanged.
 

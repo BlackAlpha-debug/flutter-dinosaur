@@ -1,5 +1,9 @@
 # Home and first-play review — November 1, 2026
 
+The current home was simplified on November 3, 2026, following the owner's
+selection of a cute character screen. See [HOME_SIMPLE_REDESIGN.md](HOME_SIMPLE_REDESIGN.md).
+The illustrated-home iterations below are retained as development history.
+
 ## Full-depth ice follow-up — 1.4.4+12
 
 The owner approved the full-depth stone surface and requested the same for ice.

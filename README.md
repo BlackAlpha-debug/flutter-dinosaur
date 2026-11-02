@@ -20,7 +20,7 @@ It runs without an account or internet connection. The current build has **no ad
 real-money purchases, analytics, social features, or location tracking**.
 
 Maintained by **[BlackAlpha-debug](https://github.com/BlackAlpha-debug)**.
-Current app version: **1.4.4+12**. Android is the release target; the web build is
+Current app version: **1.5.0+13**. Android is the release target; the web build is
 also used for development and visual checks.
 
 **Release status:** in development and being prepared for Google Play. The latest
@@ -30,8 +30,9 @@ this README does not imply that the app is already published.
 
 ## Features
 
-- **An interactive home:** a sunny jungle scene with your chosen dinosaur,
-  a tap-to-hop preview, a prominent Play button, and picture-led destinations.
+- **A simple character home:** a large dinosaur on a soft pastel backdrop,
+  a tap-to-hop interaction, one prominent Play button, and compact shortcuts
+  for the shop, collection and gifts.
 - **Three classic trails:** grass and mud, textured stone, and ice, with the
   original open sky and scrolling ground. Stone and ice each have a textured
   ledge that continues through the entire underside. Collection sparkles and shadows remain.
@@ -236,7 +237,7 @@ fixture exercises purchases; the production app has no debug coin-grant control.
 ```text
 lib/
   main.dart                 App theme, navigation, game screens, lifecycle
-  adventure_home.dart       Interactive jungle home and picture navigation
+  adventure_home.dart       Simple character home and compact navigation
   game_engine.dart          Fixed-step simulation and difficulty rules
   game_scene.dart           Scaled playfield and scenery
   world_scenery.dart         Original sky, sun/moon, and clouds
@@ -324,6 +325,7 @@ passwords, private keys, or real signing property files.
 | [Coins, characters, and gifts](docs/COINS_CHARACTERS_PLAN.md) | Economy rules and feature implementation phases |
 | [Animation](docs/ANIMATION.md) | Sprite provenance, frame timing, and verification |
 | [Home and playfield redesign](docs/HOME_EXPERIENCE.md) | Captured UX review, design choices, artwork and evidence limits |
+| [Simple home revision](docs/HOME_SIMPLE_REDESIGN.md) | Current character-focused home selected by the owner |
 | [Validation](docs/VALIDATION.md) | Completed checks and remaining manual testing |
 | [Release runbook](docs/RELEASE.md) | Signing, identity, and Google Play preparation |
 | [Android compatibility](docs/ANDROID_COMPATIBILITY.md) | Platform support and performance choices |
